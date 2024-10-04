@@ -1,5 +1,5 @@
 #This file was created by: Umar Khan
-player_speed=3
+player_speed=10
 #imports all the libraries for the game and data from 'settings'
 from typing import Any
 import pygame as pg
@@ -20,7 +20,7 @@ class Player(Sprite):
         # self.rect.y = y
         self.x = x * TILESIZE
         self.y = y * TILESIZE
-        self.speed = 10
+        self.speed = player_speed
         self.vx, self.vy = 0, 0
     #uses the typing library to collect input data from keyboard and make decisions based on it
     def get_keys(self):
@@ -39,9 +39,9 @@ class Player(Sprite):
             hits = pg.sprite.spritecollide(self, self.game.all_walls, False)
             if hits:
                 if self.x > 0:
-                    self.x = hits[0].rect.top - TILESIZE
+                    self.x = hits[0].rect.left - TILESIZE
                 if self.vx < 0:
-                    self.x = hits[0].rect.bottom
+                    self.x = hits[0].rect.right
                 self.vx = 0
                 self.rect.x = self.x
                 #we added y collision
@@ -54,6 +54,13 @@ class Player(Sprite):
                     self.y = hits[0].rect.bottom
                 self.vy = 0
                 self.rect.y = self.y
+    def collide_with_stuff(self,group,kill):
+        hits=pg.sprite.spritecollide(self,group,kill)
+        if hits:
+            if str(hits[0].__class__.__name__) == "Speed":
+                self.speed+=5
+                print("Steroids!")
+
     def update(self):
         self.get_keys()
         self.x += self.vx * self.game.dt
@@ -70,9 +77,9 @@ class Player(Sprite):
 
         self.rect.x = self.x
         self.collide_with_walls('x')
-
         self.rect.y = self.y
         self.collide_with_walls('y')
+        self.collide_with_stuff(self.game.all_powerups, True)
 # added Mob - moving objects
 #is a child class of Sprite
 class Mob(Sprite):
@@ -86,6 +93,8 @@ class Mob(Sprite):
         self.game=game
         self.rect.x = x
         self.rect.y = y
+        self.x = x * TILESIZE
+        self.y = y * TILESIZE
         #the speed of the Mob is set to 30
         self.speed = 20
         #create if statement to make the Mobs bounce back when they hit the wall
@@ -118,5 +127,21 @@ class Wall(Sprite):
         self.rect = self.image.get_rect()
         self.rect.x = x
         self.rect.y = y
+        self.x = x * TILESIZE
+        self.y = y * TILESIZE
+    def update(self):
+        pass
+class Speed(Sprite):
+    def __init__(self, game, x, y):
+        self.groups = game.all_sprites , game.all_powerups
+        Sprite.__init__(self, self.groups)
+        self.image = pg.Surface((TILESIZE, TILESIZE))
+        self.game=game
+        self.image.fill(Orange)
+        self.rect = self.image.get_rect()
+        self.rect.x = x
+        self.rect.y = y
+        self.x = x
+        self.y = y
     def update(self):
         pass
