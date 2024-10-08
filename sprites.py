@@ -3,7 +3,7 @@ player_speed=10
 #imports all the libraries for the game and data from 'settings'
 from typing import Any
 import pygame as pg
-from pygame.sprite import Group, Sprite
+from pygame.sprite import _Group, Group, Sprite
 from settings import *
 from random import randint
 
@@ -145,3 +145,4 @@ class Speed(Sprite):
         self.y = y
     def update(self):
         pass
+print("hi the new code is here!")
