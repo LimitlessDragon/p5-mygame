@@ -6,7 +6,16 @@ from settings import *
 from sprites import *
 from tilemap import *
 from os import path
+'''
+Goals:
+To finish all the coins by collecting all the coins in each level without getting hit my mobs
+Rules: You can't touch mobs; you can't reuse powerups
+Feedback: Colliding with mobs bounces them back; coins and powerups will give you something when collided with
+Freedom: Movement
 
+Player 1 collides with powerup which gives it a speed boost.
+
+'''
 # create a game class that carries all the properties of the game and methods
 class Game:
   def __init__(self):
@@ -25,6 +34,7 @@ class Game:
     self.all_sprites = pg.sprite.Group()
     self.all_walls = pg.sprite.Group()
     self.all_powerups = pg.sprite.Group()
+    self.all_coins = pg.sprite.Group()
     # instantiating the class to create the player object 
     # self.player = Player(self, 5, 5)
     # self.mob = Mob(self, 0, 50)
@@ -48,6 +58,9 @@ class Game:
         if tile == 'U':
           #draws a Powerup where U is there
           Speed(self,col*TILESIZE, row*TILESIZE)
+        if tile == 'C':
+          #draws a Coin where C is there
+          Coin(self,col*TILESIZE, row*TILESIZE)
   '''
   Funny wall generator
     #for i in range(6):
@@ -94,8 +107,11 @@ class Game:
   def draw(self):
     self.screen.fill((0, 0, 0))
     self.all_sprites.draw(self.screen)
-    self.draw_text(self.screen, "asdfdafddjfjdfjjdsfasdf", 24, White, WIDTH / 2, HEIGHT / 2)
-    self.draw_text(self.screen, str(self.dt*1000), 12, White, WIDTH/30, HEIGHT/30)
+    # Any text
+    # self.draw_text(self.screen, "asdfdafddjfjdfjjdsfasdf", 24, White, WIDTH / 2, HEIGHT / 2)
+    # Displays FPS and Coins
+    self.draw_text(self.screen, str(self.dt*1000), 18, White, WIDTH/30, HEIGHT/30)
+    self.draw_text(self.screen, str(self.player.coins), 18, White, WIDTH-10, HEIGHT/30)
     pg.display.flip()
 
 

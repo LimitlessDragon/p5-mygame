@@ -3,7 +3,7 @@ player_speed=10
 #imports all the libraries for the game and data from 'settings'
 from typing import Any
 import pygame as pg
-from pygame.sprite import _Group, Group, Sprite
+from pygame.sprite import Group, Sprite
 from settings import *
 from random import randint
 
@@ -22,6 +22,8 @@ class Player(Sprite):
         self.y = y * TILESIZE
         self.speed = player_speed
         self.vx, self.vy = 0, 0
+        self.coins=0
+
     #uses the typing library to collect input data from keyboard and make decisions based on it
     def get_keys(self):
         keys = pg.key.get_pressed()
@@ -60,6 +62,9 @@ class Player(Sprite):
             if str(hits[0].__class__.__name__) == "Speed":
                 self.speed+=5
                 print("Steroids!")
+            if str(hits[0].__class__.__name__) == "Coin":
+                print("You got a Coin!")
+                self.coins+=1
 
     def update(self):
         self.get_keys()
@@ -80,6 +85,7 @@ class Player(Sprite):
         self.rect.y = self.y
         self.collide_with_walls('y')
         self.collide_with_stuff(self.game.all_powerups, True)
+        self.collide_with_stuff(self.game.all_coins, True)
 # added Mob - moving objects
 #is a child class of Sprite
 class Mob(Sprite):
@@ -106,12 +112,12 @@ class Mob(Sprite):
             #then reverse the speed by doing *= -1 and move the Mob down by 32
             self.speed *= -1
             self.rect.y += 32
-            print("I am on the side of the screen")
+            # print("I am on the side of the screen")
         #checks for if the y value of the Mob is greater than the height of the screen
         if self.rect.y > HEIGHT:
             #if it is then set the y-value to 0
             self.rect.y = 0
-            print("I am on the bottom of the screen")
+            # print("I am on the bottom of the screen")
         if self.rect.colliderect(self.game.player):
             #player's controls get inverted
             #self.game.player.speed*=-1
@@ -145,4 +151,31 @@ class Speed(Sprite):
         self.y = y
     def update(self):
         pass
-print("hi the new code is here!")
+class Speed(Sprite):
+    def __init__(self, game, x, y):
+        self.groups = game.all_sprites , game.all_powerups
+        Sprite.__init__(self, self.groups)
+        self.image = pg.Surface((TILESIZE, TILESIZE))
+        self.game=game
+        self.image.fill(Orange)
+        self.rect = self.image.get_rect()
+        self.rect.x = x
+        self.rect.y = y
+        self.x = x
+        self.y = y
+    def update(self):
+        pass
+class Coin(Sprite):
+    def __init__(self, game, x, y):
+        self.groups = game.all_sprites , game.all_coins
+        Sprite.__init__(self, self.groups)
+        self.image = pg.Surface((TILESIZE, TILESIZE))
+        self.game=game
+        self.image.fill(Yellow)
+        self.rect = self.image.get_rect()
+        self.rect.x = x
+        self.rect.y = y
+        self.x = x
+        self.y = y
+    def update(self):
+        pass
