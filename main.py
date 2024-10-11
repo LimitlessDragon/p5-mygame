@@ -2,15 +2,18 @@
 import random
 #this is where we import libaries and modules
 import pygame as pg
-from settings import *
+#from settings import *
 from spritescoin import *
+from sprites import *
 from tilemap import *
 from os import path
 '''
 Goals:
-To finish all the coins by collecting all the coins in each level without getting hit my mobs
-Rules: You can't touch mobs; you can't reuse powerups;Gravity
-Feedback: Colliding with mobs bounces them back; coins and powerups will disappear when collided with and give different effects depending on the type
+To finish all the different levels by collecting all the coins in each level without getting hit my mobs.
+Powerups will be provided differently in each level to make the game harder or easier.
+Rules: You can't touch mobs; you can't reuse powerups;
+Feedback: Colliding with mobs bounces them back, while colliding with coins earns you a point and gets you to the next level.
+Powerups will disappear when collided with and give different effects depending on the type
 Freedom: Sideways Movement; Powerups;Debufs; vertical movement with regard to gravity
 
 Player 1 collides with powerup which gives it a speed boost.
