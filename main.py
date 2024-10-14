@@ -2,9 +2,9 @@
 import random
 #this is where we import libaries and modules
 import pygame as pg
-#from settings import *
+from settings import *
 from spritescoin import *
-from sprites import *
+#from sprites import *
 from tilemap import *
 from os import path
 '''
@@ -35,6 +35,7 @@ class Game:
     self.load_data()
     # create sprite group using the pg library
     self.all_sprites = pg.sprite.Group()
+    self.all_mobs = pg.sprite.Group()
     self.all_walls = pg.sprite.Group()
     self.all_powerups = pg.sprite.Group()
     self.all_coins = pg.sprite.Group()
@@ -61,6 +62,9 @@ class Game:
         if tile == 'U':
           #draws a Powerup where U is there
           Speed(self,col*TILESIZE, row*TILESIZE)
+        if tile == 'J':
+          #draws a Powerup where U is there
+          Jump(self,col*TILESIZE, row*TILESIZE)
         if tile == 'C':
           #draws a Coin where C is there
           Coin(self,col*TILESIZE, row*TILESIZE)
@@ -74,7 +78,7 @@ class Game:
   '''
 # this is a method
 # methods are functions that are part of a class
-# the run method runs the game loop in which a clock is ticking to set the FPS
+# the run method runs the game loop in which is ticking to set the FPS
 # After, it updates and draws the screen
   def run(self):
     while self.playing:
@@ -116,7 +120,6 @@ class Game:
     self.draw_text(self.screen, str(self.dt*1000), 18, White, WIDTH/30, HEIGHT/30)
     self.draw_text(self.screen, str(self.player.coins), 18, White, WIDTH-10, HEIGHT/30)
     pg.display.flip()
-
 
 if __name__ == "__main__":
   # instantiate the game; 

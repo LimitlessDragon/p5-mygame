@@ -1,5 +1,5 @@
 #This file was created by: Umar Khan
-player_speed=2
+player_speed=1.75
 #imports all the libraries for the game and data from 'settings'
 from typing import Any
 import pygame as pg
@@ -7,6 +7,7 @@ from pygame.sprite import Group, Sprite
 from settings import *
 from random import randint
 vec=pg.math.Vector2
+from main import *
 
 # create the player class with a superclass of Sprite. Also, initializes and puts it in a group of all_sprites which can be accessed in other classes.
 class Player(Sprite):
@@ -55,6 +56,9 @@ class Player(Sprite):
             self.jumping = True
             self.vel.y = -self.jump_power
             print("still trying to jump")
+    def game_over(Game):
+        print("Game Over!")
+        pg.quit()
         #creates the collision mechanic to check whether certain sprites are touching each other. This can later be used to create interactions
     def collide_with_walls(self, dir):
         if dir == 'x':
@@ -77,15 +81,41 @@ class Player(Sprite):
                 self.vel.y = 0
                 self.rect.y = self.pos.y
                 self.jumping = False
+    def collide_with_mobs(self, dir):
+        if dir == 'x':
+            hits = pg.sprite.spritecollide(self, self.game.all_mobs, False)
+            if hits:
+                if self.pos.x > 0:
+                    print("we have collision")
+                    self.game_over()
+                if self.pos.x < 0:
+                    print("we have collision")
+                    self.game_over()
+        if dir == 'y':
+            hits = pg.sprite.spritecollide(self, self.game.all_mobs, False)
+            if hits:
+                if self.pos.y > 0:
+                    print("we have collision")
+                    self.game_over()
+                if self.pos.y < 0:
+                    print("we have collision")
+                    self.game_over()
     def collide_with_stuff(self,group,kill):
         hits=pg.sprite.spritecollide(self,group,kill)
         if hits:
             if str(hits[0].__class__.__name__) == "Speed":
                 self.speed+=5
-                print("Steroids!")
+                print("Speed Boost!")
             if str(hits[0].__class__.__name__) == "Coin":
                 print("You got a Coin!")
                 self.coins+=1
+            if str(hits[0].__class__.__name__) == "Jump":
+                print("Jump Boost!")
+                self.jump_power+=5
+                # Add a timer using clock
+                print("Time is ticking")
+                self.jump_power-=5
+                
 
     def jump(self):
         self.rect.y += 2
@@ -108,19 +138,21 @@ class Player(Sprite):
         
         self.collide_with_stuff(self.game.all_powerups, True)
         self.collide_with_stuff(self.game.all_coins, True)
-
+        self.collide_with_mobs(self.game.all_mobs)
         self.rect.x = self.pos.x
         self.collide_with_walls('x')
-        
+        self.collide_with_mobs('x')
         self.rect.y = self.pos.y
         self.collide_with_walls('y')
+        self.collide_with_mobs('y')
         self.collide_with_stuff(self.game.all_powerups, True)
         self.collide_with_stuff(self.game.all_coins, True)
+        self.collide_with_mobs(self.game.all_mobs)
 # added Mob - moving objects
 #is a child class of Sprite
 class Mob(Sprite):
     def __init__(self, game, x, y):
-        self.groups = game.all_sprites
+        self.groups = game.all_sprites, game.all_mobs
         Sprite.__init__(self, self.groups)
         self.image = pg.Surface((32, 32))
         #color of the mob is being set to green
@@ -132,7 +164,7 @@ class Mob(Sprite):
         self.x = x * TILESIZE
         self.y = y * TILESIZE
         #the speed of the Mob is set to 30
-        self.speed = 20
+        self.speed = 35
         #create if statement to make the Mobs bounce back when they hit the wall
     def update(self):
         self.rect.x += self.speed
@@ -141,18 +173,15 @@ class Mob(Sprite):
         if self.rect.x > WIDTH or self.rect.x < 0:
             #then reverse the speed by doing *= -1 and move the Mob down by 32
             self.speed *= -1
-            self.rect.y += 32
+            # self.rect.y += 32
             # print("I am on the side of the screen")
         #checks for if the y value of the Mob is greater than the height of the screen
         if self.rect.y > HEIGHT:
             #if it is then set the y-value to 0
             self.rect.y = 0
             # print("I am on the bottom of the screen")
-        if self.rect.colliderect(self.game.player):
-            #player's controls get inverted
-            #self.game.player.speed*=-1
-            #mob goes backwards
-            self.speed*=-1
+            
+
 class Wall(Sprite):
     def __init__(self, game, x, y):
         self.groups = game.all_sprites , game.all_walls
@@ -181,13 +210,13 @@ class Speed(Sprite):
         self.y = y
     def update(self):
         pass
-class Speed(Sprite):
+class Jump(Sprite):
     def __init__(self, game, x, y):
         self.groups = game.all_sprites , game.all_powerups
         Sprite.__init__(self, self.groups)
         self.image = pg.Surface((TILESIZE, TILESIZE))
         self.game=game
-        self.image.fill(Orange)
+        self.image.fill(Blue)
         self.rect = self.image.get_rect()
         self.rect.x = x
         self.rect.y = y
