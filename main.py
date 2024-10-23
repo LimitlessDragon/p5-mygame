@@ -7,6 +7,7 @@ from spritescoin import *
 #from sprites import *
 from tilemap import *
 from os import path
+from utilities import *
 '''
 Goals:
 To finish all the different levels by collecting all the coins in each level without getting hit my mobs.
@@ -31,16 +32,74 @@ class Game:
   def load_data(self):
     self.game_folder = path.dirname(__file__)
     self.map = Map(path.join(self.game_folder, 'lvl1.txt'))
+    '''
+  def game_over(self, level):
+    print("Finally, at last it works")
+    self.game_folder = path.dirname(__file__)
+    self.map = Map(path.join(self.game_folder, level))
+    for row, tiles in enumerate(self.map.data):
+      print(row*TILESIZE)
+      for col, tile in enumerate(tiles):
+        print(col*TILESIZE)
+        if tile == '1':
+          #if 1 is in the text file, then draw a wall
+          Wall(self, col*TILESIZE, row*TILESIZE)
+        if tile == 'M':
+          #draws a Mob where M is there
+          Mob(self,col*TILESIZE, row*TILESIZE)
+        if tile == 'P':
+          #draws a Player where P is there
+          self.player=Player(self,col, row)
+        if tile == 'U':
+          #draws a Powerup where U is there
+          Speed(self,col*TILESIZE, row*TILESIZE)
+        if tile == 'J':
+          #draws a Powerup where U is there
+          Jump(self,col*TILESIZE, row*TILESIZE)
+        if tile == 'C':
+          #draws a Coin where C is there
+          Coin(self,col*TILESIZE, row*TILESIZE)
+          '''
+  def load_level(self, level):
+    print("Finally, at last it works")
+    self.game_folder = path.dirname(__file__)
+    self.map = Map(path.join(self.game_folder, level))
+    for row, tiles in enumerate(self.map.data):
+      print(row*TILESIZE)
+      for col, tile in enumerate(tiles):
+        print(col*TILESIZE)
+        if tile == '1':
+          #if 1 is in the text file, then draw a wall
+          Wall(self, col*TILESIZE, row*TILESIZE)
+        if tile == 'M':
+          #draws a Mob where M is there
+          Mob(self,col*TILESIZE, row*TILESIZE)
+        if tile == 'P':
+          #draws a Player where P is there
+          self.player=Player(self,col, row)
+        if tile == 'U':
+          #draws a Powerup where U is there
+          Speed(self,col*TILESIZE, row*TILESIZE)
+        if tile == 'J':
+          #draws a Powerup where U is there
+          Jump(self,col*TILESIZE, row*TILESIZE)
+        if tile == 'C':
+          #draws a Coin where C is there
+          Coin(self,col*TILESIZE, row*TILESIZE)
+
   def new(self):
     self.load_data()
+    print(self.map.data)
+    #create game countdown
+    self.game_timer= Timer(self)
+    #countdown time
+    self.game_timer.cd = 10
     # create sprite group using the pg library
     self.all_sprites = pg.sprite.Group()
     self.all_mobs = pg.sprite.Group()
     self.all_walls = pg.sprite.Group()
     self.all_powerups = pg.sprite.Group()
     self.all_coins = pg.sprite.Group()
-    # instantiating the class to create the player object 
-    # self.player = Player(self, 5, 5)
     # self.mob = Mob(self, 0, 50)
     # self.wall = Wall(self, WIDTH//2,HEIGHT//2)
     # #added sprites(player, mob, etc...) to the all_sprites group already in sprites in sprites
@@ -99,9 +158,13 @@ class Game:
           self.playing = False
   # Makes sure the sprites are constantly being update on the screen with their values/data
   def update(self):
+    #use of timer
+    if self.game_timer.cd < 39:
+       for s in self.all_sprites:
+        s.kill
+        self.load_level("game_over")
     self.all_sprites.update()
   # This draws the actual game unto the window, with all the sprites
-  
   def draw_text(self, surface, text, size, color, x, y):
     font_name = pg.font.match_font('arial')
     font = pg.font.Font(font_name, size)

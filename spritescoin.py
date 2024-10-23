@@ -8,6 +8,7 @@ from settings import *
 from random import randint
 vec=pg.math.Vector2
 from main import *
+from utilities import *
 
 # create the player class with a superclass of Sprite. Also, initializes and puts it in a group of all_sprites which can be accessed in other classes.
 class Player(Sprite):
@@ -56,9 +57,7 @@ class Player(Sprite):
             self.jumping = True
             self.vel.y = -self.jump_power
             print("still trying to jump")
-    def game_over(Game):
-        print("Game Over!")
-        pg.quit()
+        
         #creates the collision mechanic to check whether certain sprites are touching each other. This can later be used to create interactions
     def collide_with_walls(self, dir):
         if dir == 'x':
@@ -87,19 +86,19 @@ class Player(Sprite):
             if hits:
                 if self.pos.x > 0:
                     print("we have collision")
-                    self.game_over()
+                    Game.game_over(self)
                 if self.pos.x < 0:
                     print("we have collision")
-                    self.game_over()
+                    Game.game_over(self)
         if dir == 'y':
             hits = pg.sprite.spritecollide(self, self.game.all_mobs, False)
             if hits:
                 if self.pos.y > 0:
                     print("we have collision")
-                    self.game_over()
+                    Game.game_over(self)
                 if self.pos.y < 0:
                     print("we have collision")
-                    self.game_over()
+                    Game.game_over(self)
     def collide_with_stuff(self,group,kill):
         hits=pg.sprite.spritecollide(self,group,kill)
         if hits:
@@ -112,8 +111,7 @@ class Player(Sprite):
             if str(hits[0].__class__.__name__) == "Jump":
                 print("Jump Boost!")
                 self.jump_power+=5
-                # Add a timer using clock
-                print("Time is ticking")
+                #add a timer
                 self.jump_power-=5
                 
 
@@ -148,6 +146,8 @@ class Player(Sprite):
         self.collide_with_stuff(self.game.all_powerups, True)
         self.collide_with_stuff(self.game.all_coins, True)
         self.collide_with_mobs(self.game.all_mobs)
+        if quit == True:
+            print("Quiter")
 # added Mob - moving objects
 #is a child class of Sprite
 class Mob(Sprite):
