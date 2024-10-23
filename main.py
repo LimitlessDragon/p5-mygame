@@ -28,46 +28,23 @@ class Game:
     self.screen = pg.display.set_mode((WIDTH, HEIGHT))
     pg.display.set_caption("Chris' Coolest Game Ever...")
     self.playing = True
-  # this is where the game creates the stuff you see and hear: Sprites in which have certain dimensions
+  # this is where the game creates the stuff you see and hear
   def load_data(self):
     self.game_folder = path.dirname(__file__)
     self.map = Map(path.join(self.game_folder, 'lvl1.txt'))
-    '''
-  def game_over(self, level):
-    print("Finally, at last it works")
-    self.game_folder = path.dirname(__file__)
-    self.map = Map(path.join(self.game_folder, level))
-    for row, tiles in enumerate(self.map.data):
-      print(row*TILESIZE)
-      for col, tile in enumerate(tiles):
-        print(col*TILESIZE)
-        if tile == '1':
-          #if 1 is in the text file, then draw a wall
-          Wall(self, col*TILESIZE, row*TILESIZE)
-        if tile == 'M':
-          #draws a Mob where M is there
-          Mob(self,col*TILESIZE, row*TILESIZE)
-        if tile == 'P':
-          #draws a Player where P is there
-          self.player=Player(self,col, row)
-        if tile == 'U':
-          #draws a Powerup where U is there
-          Speed(self,col*TILESIZE, row*TILESIZE)
-        if tile == 'J':
-          #draws a Powerup where U is there
-          Jump(self,col*TILESIZE, row*TILESIZE)
-        if tile == 'C':
-          #draws a Coin where C is there
-          Coin(self,col*TILESIZE, row*TILESIZE)
-          '''
   def load_level(self, level):
-    print("Finally, at last it works")
-    self.game_folder = path.dirname(__file__)
     self.map = Map(path.join(self.game_folder, level))
+    # create game countdown timer
+    self.game_timer = Timer(self)
+    # # set countdown amount
+    self.game_timer.cd = 60
+    # create the all sprites group to allow for batch updates and draw methods
+    self.all_sprites = pg.sprite.Group()
+    self.all_walls = pg.sprite.Group()
+    self.all_powerups = pg.sprite.Group()
+    self.all_coins = pg.sprite.Group()
     for row, tiles in enumerate(self.map.data):
-      print(row*TILESIZE)
       for col, tile in enumerate(tiles):
-        print(col*TILESIZE)
         if tile == '1':
           #if 1 is in the text file, then draw a wall
           Wall(self, col*TILESIZE, row*TILESIZE)
@@ -86,29 +63,28 @@ class Game:
         if tile == 'C':
           #draws a Coin where C is there
           Coin(self,col*TILESIZE, row*TILESIZE)
-
+  # def game_over(self):
+  #   print("Its Over!!!!!!!")
+  #   self.load_level("lvl2.txt")
   def new(self):
     self.load_data()
-    print(self.map.data)
     #create game countdown
     self.game_timer= Timer(self)
     #countdown time
-    self.game_timer.cd = 10
+    self.game_timer.cd = 50
     # create sprite group using the pg library
     self.all_sprites = pg.sprite.Group()
     self.all_mobs = pg.sprite.Group()
     self.all_walls = pg.sprite.Group()
     self.all_powerups = pg.sprite.Group()
     self.all_coins = pg.sprite.Group()
-    # self.mob = Mob(self, 0, 50)
+    # self.mob = Mob(self, 0, 0)
     # self.wall = Wall(self, WIDTH//2,HEIGHT//2)
     # #added sprites(player, mob, etc...) to the all_sprites group already in sprites in sprites
     #for loop to add more walls/sprites from the group all_sprites
     #we are going to read the text file into pixels
     for row, tiles in enumerate(self.map.data):
-      print(row*TILESIZE)
       for col, tile in enumerate(tiles):
-        print(col*TILESIZE)
         if tile == '1':
           #if 1 is in the text file, then draw a wall
           Wall(self, col*TILESIZE, row*TILESIZE)
@@ -135,6 +111,7 @@ class Game:
     #for i in range(5):
       #m=Mob(self,TILESIZE*i,TILESIZE*2*i*random.random())
   '''
+
 # this is a method
 # methods are functions that are part of a class
 # the run method runs the game loop in which is ticking to set the FPS
@@ -158,13 +135,14 @@ class Game:
           self.playing = False
   # Makes sure the sprites are constantly being update on the screen with their values/data
   def update(self):
-    #use of timer
-    if self.game_timer.cd < 39:
-       for s in self.all_sprites:
-        s.kill
-        self.load_level("game_over")
+    print(self.game_timer.cd)
+    self.game_timer.ticking()
+    if self.game_timer.cd < 40:
+      for s in self.all_sprites:
+        s.kill()
+        self.load_level("lvl2.txt")
+    # update all the sprites...and I MEAN ALL OF THEM
     self.all_sprites.update()
-  # This draws the actual game unto the window, with all the sprites
   def draw_text(self, surface, text, size, color, x, y):
     font_name = pg.font.match_font('arial')
     font = pg.font.Font(font_name, size)
@@ -172,6 +150,33 @@ class Game:
     text_rect = text_surface.get_rect()
     text_rect.midtop = (x,y)
     surface.blit(text_surface, text_rect)
+  # game_over mechanism
+  def game_over(self, level):
+    print("Its Game Over!!!!")
+    for s in self.all_sprites:
+      s.kill()
+    self.map = Map(path.join(self.game_folder, level))
+    for row, tiles in enumerate(self.map.data):
+      for col, tile in enumerate(tiles):
+        if tile == '1':
+          #if 1 is in the text file, then draw a wall
+          Wall(self, col*TILESIZE, row*TILESIZE)
+        if tile == 'M':
+          #draws a Mob where M is there
+          Mob(self,col*TILESIZE, row*TILESIZE)
+        if tile == 'P':
+          #draws a Player where P is there
+          self.player = Player(self,col, row)
+        if tile == 'U':
+          #draws a Powerup where U is there
+          Speed(self,col*TILESIZE, row*TILESIZE)
+        if tile == 'J':
+          #draws a Powerup where U is there
+          Jump(self,col*TILESIZE, row*TILESIZE)
+        if tile == 'C':
+          #draws a Coin where C is there
+          Coin(self,col*TILESIZE, row*TILESIZE)
+
 
   # output
   def draw(self):

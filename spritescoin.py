@@ -51,7 +51,7 @@ class Player(Sprite):
         print('trying to jump...')
         print(self.vel.y)
         self.rect.y +=2
-        hits = pg.sprite.spritecollide(self,self.game,all_walls, False)
+        hits = pg.sprite.spritecollide(self,self.game.all_walls, False)
         self.rect.y -=2
         if hits and not self.jumping:
             self.jumping = True
@@ -86,19 +86,19 @@ class Player(Sprite):
             if hits:
                 if self.pos.x > 0:
                     print("we have collision")
-                    Game.game_over(self)
+                    self.game.game_over("lvl2.txt")
                 if self.pos.x < 0:
                     print("we have collision")
-                    Game.game_over(self)
+                    self.game.game_over("lvl2.txt")
         if dir == 'y':
             hits = pg.sprite.spritecollide(self, self.game.all_mobs, False)
             if hits:
                 if self.pos.y > 0:
                     print("we have collision")
-                    Game.game_over(self)
+                    self.game.game_over("lvl2.txt")
                 if self.pos.y < 0:
                     print("we have collision")
-                    Game.game_over(self)
+                    self.game.game_over("lvl2.txt")
     def collide_with_stuff(self,group,kill):
         hits=pg.sprite.spritecollide(self,group,kill)
         if hits:
