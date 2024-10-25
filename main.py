@@ -3,11 +3,12 @@ import random
 #this is where we import libaries and modules
 import pygame as pg
 from settings import *
-from spritescoin import *
+from mysprites import *
 #from sprites import *
 from tilemap import *
 from os import path
 from utilities import *
+from typing import *
 '''
 Goals:
 To finish all the different levels by collecting all the coins in each level without getting hit my mobs.
@@ -32,6 +33,9 @@ class Game:
   def load_data(self):
     self.game_folder = path.dirname(__file__)
     self.map = Map(path.join(self.game_folder, 'lvl1.txt'))
+    #Player.get_keys(self)
+ # def reset_Player(self):
+    #Game.new(self)
   def load_level(self, level):
     self.map = Map(path.join(self.game_folder, level))
     # create game countdown timer
@@ -43,6 +47,7 @@ class Game:
     self.all_walls = pg.sprite.Group()
     self.all_powerups = pg.sprite.Group()
     self.all_coins = pg.sprite.Group()
+  def drawing_sprites(self):
     for row, tiles in enumerate(self.map.data):
       for col, tile in enumerate(tiles):
         if tile == '1':
@@ -63,9 +68,7 @@ class Game:
         if tile == 'C':
           #draws a Coin where C is there
           Coin(self,col*TILESIZE, row*TILESIZE)
-  # def game_over(self):
-  #   print("Its Over!!!!!!!")
-  #   self.load_level("lvl2.txt")
+    self.drawing_sprites()
   def new(self):
     self.load_data()
     #create game countdown
@@ -103,6 +106,7 @@ class Game:
         if tile == 'C':
           #draws a Coin where C is there
           Coin(self,col*TILESIZE, row*TILESIZE)
+    #Game.drawing_sprites(self)
   '''
   Funny wall generator
     #for i in range(6):
@@ -111,7 +115,6 @@ class Game:
     #for i in range(5):
       #m=Mob(self,TILESIZE*i,TILESIZE*2*i*random.random())
   '''
-
 # this is a method
 # methods are functions that are part of a class
 # the run method runs the game loop in which is ticking to set the FPS
@@ -137,10 +140,6 @@ class Game:
   def update(self):
     print(self.game_timer.cd)
     self.game_timer.ticking()
-    if self.game_timer.cd < 40:
-      for s in self.all_sprites:
-        s.kill()
-        self.load_level("lvl2.txt")
     # update all the sprites...and I MEAN ALL OF THEM
     self.all_sprites.update()
   def draw_text(self, surface, text, size, color, x, y):
@@ -150,9 +149,13 @@ class Game:
     text_rect = text_surface.get_rect()
     text_rect.midtop = (x,y)
     surface.blit(text_surface, text_rect)
-  # game_over mechanism
-  def game_over(self, level):
-    print("Its Game Over!!!!")
+  '''
+  next_stage mechanism: First kills all the mobs to clear memory.
+  Then, it loads a new level which the argument used when it is
+  called determines what stage is next which makes it useful
+  in many cases such as: next level; game over; bonus level
+  '''
+  def next_stage(self, level):
     for s in self.all_sprites:
       s.kill()
     self.map = Map(path.join(self.game_folder, level))
@@ -176,8 +179,7 @@ class Game:
         if tile == 'C':
           #draws a Coin where C is there
           Coin(self,col*TILESIZE, row*TILESIZE)
-
-
+    # Game.drawing_sprites(self.Game)
   # output
   def draw(self):
     self.screen.fill((0, 0, 0))

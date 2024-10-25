@@ -47,6 +47,8 @@ class Player(Sprite):
             self.acc.x = self.speed
         if keys[pg.K_SPACE]:
             self.jump()
+        #if keys[pg.K_r]:
+           # Game.reset_Player(self)
     def jump(self):
         print('trying to jump...')
         print(self.vel.y)
@@ -85,20 +87,16 @@ class Player(Sprite):
             hits = pg.sprite.spritecollide(self, self.game.all_mobs, False)
             if hits:
                 if self.pos.x > 0:
-                    print("we have collision")
-                    self.game.game_over("lvl2.txt")
+                    self.game.next_stage("lvl2.txt")
                 if self.pos.x < 0:
-                    print("we have collision")
-                    self.game.game_over("lvl2.txt")
+                    self.game.next_stage("lvl2.txt")
         if dir == 'y':
             hits = pg.sprite.spritecollide(self, self.game.all_mobs, False)
             if hits:
                 if self.pos.y > 0:
-                    print("we have collision")
-                    self.game.game_over("lvl2.txt")
+                    self.game.next_stage("lvl2.txt")
                 if self.pos.y < 0:
-                    print("we have collision")
-                    self.game.game_over("lvl2.txt")
+                    self.game.next_stage("lvl2.txt")
     def collide_with_stuff(self,group,kill):
         hits=pg.sprite.spritecollide(self,group,kill)
         if hits:
@@ -164,7 +162,7 @@ class Mob(Sprite):
         self.x = x * TILESIZE
         self.y = y * TILESIZE
         #the speed of the Mob is set to 30
-        self.speed = 35
+        self.speed = 25
         #create if statement to make the Mobs bounce back when they hit the wall
     def update(self):
         self.rect.x += self.speed

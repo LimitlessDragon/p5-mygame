@@ -3,7 +3,7 @@ import random
 #this is where we import libaries and modules
 import pygame as pg
 from settings import *
-from spritescoin import *
+from mysprites import *
 from tilemap import *
 from os import path
 '''
