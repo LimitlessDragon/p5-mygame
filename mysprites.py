@@ -32,8 +32,6 @@ class Player(Sprite):
 
         self.speed = player_speed
         #self.vx, self.vy = 0, 0
-        self.coins=0
-
     #uses the typing library to collect input data from keyboard and make decisions based on it
     def get_keys(self):
         keys = pg.key.get_pressed()
@@ -214,7 +212,7 @@ class Jump(Sprite):
         Sprite.__init__(self, self.groups)
         self.image = pg.Surface((TILESIZE, TILESIZE))
         self.game=game
-        self.image.fill(Blue)
+        self.image.fill(Purple)
         self.rect = self.image.get_rect()
         self.rect.x = x
         self.rect.y = y

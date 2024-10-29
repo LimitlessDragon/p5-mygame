@@ -20,6 +20,15 @@ Freedom: Sideways Movement; Powerups;Debufs; vertical movement with regard to gr
 
 Player 1 collides with powerup which gives it a speed boost.
 
+
+New ideas to add/do:
+Add comments
+NEW LEVELS
+Moving Platforms
+Portals
+Timer for Powerup
+create a reset button(r)-fix the load_data error when I tried to do it
+create a def current_level(): to save the level after you die
 '''
 # create a game class that carries all the properties of the game and methods
 class Game:
@@ -138,7 +147,7 @@ class Game:
           self.playing = False
   # Makes sure the sprites are constantly being update on the screen with their values/data
   def update(self):
-    print(self.game_timer.cd)
+    self.next_level(self)
     self.game_timer.ticking()
     # update all the sprites...and I MEAN ALL OF THEM
     self.all_sprites.update()
@@ -149,6 +158,16 @@ class Game:
     text_rect = text_surface.get_rect()
     text_rect.midtop = (x,y)
     surface.blit(text_surface, text_rect)
+  '''
+  When the total # of Coins are reached then the level is switched to the next level
+  The next thing to do with this is to change other values like speed and health(maybe)
+  Also, later I can make this more streamline with more levels like lvl_4.txt and lvl_5.txt in which I could scan the current level
+  for amount of coins to check if all were collected before switching.
+  '''
+  def next_level(self,level):
+    if self.player.coins == 6:
+      self.next_stage("lvl3.txt")
+      #change other stuff      
   '''
   next_stage mechanism: First kills all the mobs to clear memory.
   Then, it loads a new level which the argument used when it is
