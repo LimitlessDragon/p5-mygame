@@ -36,7 +36,7 @@ class Game:
     pg.init()
     self.clock = pg.time.Clock()
     self.screen = pg.display.set_mode((WIDTH, HEIGHT))
-    pg.display.set_caption("Chris' Coolest Game Ever...")
+    pg.display.set_caption("Umar's Coolest Game Ever...")
     self.playing = True
   # this is where the game creates the stuff you see and hear
   def load_data(self):
@@ -51,11 +51,8 @@ class Game:
     self.game_timer = Timer(self)
     # # set countdown amount
     self.game_timer.cd = 60
-    # create the all sprites group to allow for batch updates and draw methods
-    self.all_sprites = pg.sprite.Group()
-    self.all_walls = pg.sprite.Group()
-    self.all_powerups = pg.sprite.Group()
-    self.all_coins = pg.sprite.Group()
+  # enumerates the .txt files, so it can be read as columns and rows
+  # It scans the columns and rows for specfic letters such as M to place a Mob. Each letter is a different Tile of 32 pixels.
   def drawing_sprites(self):
     for row, tiles in enumerate(self.map.data):
       for col, tile in enumerate(tiles):
@@ -85,6 +82,8 @@ class Game:
     #countdown time
     self.game_timer.cd = 50
     # create sprite group using the pg library
+    # create the different sprites groups to allow for batch updates and draw methods
+    # This allows the same interactions between the Player and some classes, while also easily allowing different interactions
     self.all_sprites = pg.sprite.Group()
     self.all_mobs = pg.sprite.Group()
     self.all_walls = pg.sprite.Group()
@@ -115,7 +114,7 @@ class Game:
         if tile == 'C':
           #draws a Coin where C is there
           Coin(self,col*TILESIZE, row*TILESIZE)
-    #Game.drawing_sprites(self)
+    #self.drawing_sprites()
   '''
   Funny wall generator
     #for i in range(6):
@@ -198,7 +197,7 @@ class Game:
         if tile == 'C':
           #draws a Coin where C is there
           Coin(self,col*TILESIZE, row*TILESIZE)
-    # Game.drawing_sprites(self.Game)
+    #self.drawing_sprites()
   # output
   def draw(self):
     self.screen.fill((0, 0, 0))

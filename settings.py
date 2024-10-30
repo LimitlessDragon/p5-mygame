@@ -1,3 +1,4 @@
+# variables used in main.py and mysprites.py
 GRAVITY = 1.2
 FRICTION = -0.35
 FPS=30

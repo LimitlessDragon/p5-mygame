@@ -58,7 +58,8 @@ class Player(Sprite):
             self.vel.y = -self.jump_power
             print("still trying to jump")
         
-        #creates the collision mechanic to check whether certain sprites are touching each other. This can later be used to create interactions
+        #creates the collision mechanic to check whether walls are touching the Player in which to
+        # make sure the Player can't go through walls
     def collide_with_walls(self, dir):
         if dir == 'x':
             hits = pg.sprite.spritecollide(self, self.game.all_walls, False)
@@ -80,6 +81,9 @@ class Player(Sprite):
                 self.vel.y = 0
                 self.rect.y = self.pos.y
                 self.jumping = False
+    # The mob collision system is similar to that of the wall's where from 4 directions it check whether the Player
+    # is touching the Mob. If so it switches to the "lvl2.txt" which is the game_over stage using the next_stage
+    # function in the self.update() part of main.py
     def collide_with_mobs(self, dir):
         if dir == 'x':
             hits = pg.sprite.spritecollide(self, self.game.all_mobs, False)
@@ -95,6 +99,8 @@ class Player(Sprite):
                     self.game.next_stage("lvl2.txt")
                 if self.pos.y < 0:
                     self.game.next_stage("lvl2.txt")
+    # colldie_with_stuff creates interactions between the all_powerups groups and can change the speed, jump_power, 
+    # it also needs a timer
     def collide_with_stuff(self,group,kill):
         hits=pg.sprite.spritecollide(self,group,kill)
         if hits:
@@ -110,7 +116,8 @@ class Player(Sprite):
                 #add a timer
                 self.jump_power-=5
                 
-
+    # jumping mechanism in which if the player is touching a class from the all_walls group, then
+    # it can jump the set jump power (in settings)
     def jump(self):
         self.rect.y += 2
         hits = pg.sprite.spritecollide(self, self.game.all_walls, False)
@@ -146,22 +153,26 @@ class Player(Sprite):
             print("Quiter")
 # added Mob - moving objects
 #is a child class of Sprite
+# The Mob is in the group of all_mobs in which above the interactions between Mobs and Players can be created
 class Mob(Sprite):
     def __init__(self, game, x, y):
         self.groups = game.all_sprites, game.all_mobs
         Sprite.__init__(self, self.groups)
         self.image = pg.Surface((32, 32))
-        #color of the mob is being set to green
+        # color of the mob is being set to green
         self.image.fill(Green)
         self.rect = self.image.get_rect()
         self.game=game
         self.rect.x = x
         self.rect.y = y
+        # Each Mob is the size of 32 by 32 pixels or 1 TILESIZE ( in settings)
         self.x = x * TILESIZE
         self.y = y * TILESIZE
         #the speed of the Mob is set to 30
         self.speed = 25
         #create if statement to make the Mobs bounce back when they hit the wall
+    # this method updates the Mob sprite so that it is always checking whether it is touching the side of the
+    # screen, so it can go backwards using an if statement.
     def update(self):
         self.rect.x += self.speed
         # self.rect.y += self.speed
@@ -169,15 +180,11 @@ class Mob(Sprite):
         if self.rect.x > WIDTH or self.rect.x < 0:
             #then reverse the speed by doing *= -1 and move the Mob down by 32
             self.speed *= -1
-            # self.rect.y += 32
-            # print("I am on the side of the screen")
         #checks for if the y value of the Mob is greater than the height of the screen
         if self.rect.y > HEIGHT:
             #if it is then set the y-value to 0
-            self.rect.y = 0
-            # print("I am on the bottom of the screen")
-            
-
+            self.rect.y = 0            
+# The Wall Class is part of the group all_walls in which interacts with the Player
 class Wall(Sprite):
     def __init__(self, game, x, y):
         self.groups = game.all_sprites , game.all_walls
@@ -192,6 +199,7 @@ class Wall(Sprite):
         self.y = y * TILESIZE
     def update(self):
         pass
+# This is the Speed Class that is part of the class all_powerups which has a shared interaction between it and the Player
 class Speed(Sprite):
     def __init__(self, game, x, y):
         self.groups = game.all_sprites , game.all_powerups
@@ -206,6 +214,7 @@ class Speed(Sprite):
         self.y = y
     def update(self):
         pass
+# This is the Jump Class that is part of the class all_powerups which has a shared interaction between it and the Player
 class Jump(Sprite):
     def __init__(self, game, x, y):
         self.groups = game.all_sprites , game.all_powerups
@@ -220,6 +229,7 @@ class Jump(Sprite):
         self.y = y
     def update(self):
         pass
+# this is the Coin Class
 class Coin(Sprite):
     def __init__(self, game, x, y):
         self.groups = game.all_sprites , game.all_coins
