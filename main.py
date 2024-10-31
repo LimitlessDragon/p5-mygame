@@ -42,9 +42,12 @@ class Game:
   def load_data(self):
     self.game_folder = path.dirname(__file__)
     self.map = Map(path.join(self.game_folder, 'lvl1.txt'))
-    #Player.get_keys(self)
- # def reset_Player(self):
-    #Game.new(self)
+    # Player.get_keys(self)
+    
+  # def reset_Player(self):
+    # if self.player.keys[pg.K_r]:
+    #   Game.reset_Player(self)
+    # Game.new(self)
   def load_level(self, level):
     self.map = Map(path.join(self.game_folder, level))
     # create game countdown timer
@@ -53,27 +56,30 @@ class Game:
     self.game_timer.cd = 60
   # enumerates the .txt files, so it can be read as columns and rows
   # It scans the columns and rows for specfic letters such as M to place a Mob. Each letter is a different Tile of 32 pixels.
-  def drawing_sprites(self):
-    for row, tiles in enumerate(self.map.data):
-      for col, tile in enumerate(tiles):
-        if tile == '1':
-          #if 1 is in the text file, then draw a wall
-          Wall(self, col*TILESIZE, row*TILESIZE)
-        if tile == 'M':
-          #draws a Mob where M is there
-          Mob(self,col*TILESIZE, row*TILESIZE)
-        if tile == 'P':
-          #draws a Player where P is there
-          self.player=Player(self,col, row)
-        if tile == 'U':
-          #draws a Powerup where U is there
-          Speed(self,col*TILESIZE, row*TILESIZE)
-        if tile == 'J':
-          #draws a Powerup where U is there
-          Jump(self,col*TILESIZE, row*TILESIZE)
-        if tile == 'C':
-          #draws a Coin where C is there
-          Coin(self,col*TILESIZE, row*TILESIZE)
+    def drawing_sprites(self):
+      for row, tiles in enumerate(self.map.data):
+        for col, tile in enumerate(tiles):
+          if tile == '1':
+            #if 1 is in the text file, then draw a wall
+            Wall(self, col*TILESIZE, row*TILESIZE)
+          if tile == 'M':
+            #draws a Mob where M is there
+            Mob(self,col*TILESIZE, row*TILESIZE)
+          if tile == 'P':
+            #draws a Player where P is there
+            self.player=Player(self,col, row)
+          if tile == 'U':
+            #draws a Powerup where U is there
+            Speed(self,col*TILESIZE, row*TILESIZE)
+          if tile == 'J':
+            #draws a Powerup where U is there
+            Jump(self,col*TILESIZE, row*TILESIZE)
+          if tile == 'C':
+            #draws a Coin where C is there
+            Coin(self,col*TILESIZE, row*TILESIZE)
+          if tile == 'A':
+            #draws a moving wall
+            Moving_wall(self, col*TILESIZE, row*TILESIZE)
     self.drawing_sprites()
   def new(self):
     self.load_data()
@@ -95,26 +101,30 @@ class Game:
     #for loop to add more walls/sprites from the group all_sprites
     #we are going to read the text file into pixels
     for row, tiles in enumerate(self.map.data):
-      for col, tile in enumerate(tiles):
-        if tile == '1':
-          #if 1 is in the text file, then draw a wall
-          Wall(self, col*TILESIZE, row*TILESIZE)
-        if tile == 'M':
-          #draws a Mob where M is there
-          Mob(self,col*TILESIZE, row*TILESIZE)
-        if tile == 'P':
-          #draws a Player where P is there
-          self.player=Player(self,col, row)
-        if tile == 'U':
-          #draws a Powerup where U is there
-          Speed(self,col*TILESIZE, row*TILESIZE)
-        if tile == 'J':
-          #draws a Powerup where U is there
-          Jump(self,col*TILESIZE, row*TILESIZE)
-        if tile == 'C':
-          #draws a Coin where C is there
-          Coin(self,col*TILESIZE, row*TILESIZE)
-    #self.drawing_sprites()
+        for col, tile in enumerate(tiles):
+          if tile == '1':
+            #if 1 is in the text file, then draw a wall
+            Wall(self, col*TILESIZE, row*TILESIZE)
+          if tile == 'M':
+            #draws a Mob where M is there
+            Mob(self,col*TILESIZE, row*TILESIZE)
+          if tile == 'P':
+            #draws a Player where P is there
+            self.player=Player(self,col, row)
+          if tile == 'U':
+            #draws a Powerup where U is there
+            Speed(self,col*TILESIZE, row*TILESIZE)
+          if tile == 'J':
+            #draws a Powerup where U is there
+            Jump(self,col*TILESIZE, row*TILESIZE)
+          if tile == 'C':
+            #draws a Coin where C is there
+            Coin(self,col*TILESIZE, row*TILESIZE)
+          if tile == 'A':
+            #draws a moving wall
+            Moving_wall(self, col*TILESIZE, row*TILESIZE)
+    #drawing_sprites(self)
+
   '''
   Funny wall generator
     #for i in range(6):
@@ -146,7 +156,7 @@ class Game:
           self.playing = False
   # Makes sure the sprites are constantly being update on the screen with their values/data
   def update(self):
-    self.next_level(self)
+    self.next_level_first(self)
     self.game_timer.ticking()
     # update all the sprites...and I MEAN ALL OF THEM
     self.all_sprites.update()
@@ -163,10 +173,14 @@ class Game:
   Also, later I can make this more streamline with more levels like lvl_4.txt and lvl_5.txt in which I could scan the current level
   for amount of coins to check if all were collected before switching.
   '''
-  def next_level(self,level):
-    if self.player.coins == 6:
+  #Change the value for the if statement to a variable amount that changes for each level
+  def next_level_first(self,level):
+    if self.player.coins == 1:
+      #next stage
       self.next_stage("lvl3.txt")
-      #change other stuff      
+      #when player is recalled it resets the coins, so we put it back
+      self.player.coins = 6
+      #change other stuff     
   '''
   next_stage mechanism: First kills all the mobs to clear memory.
   Then, it loads a new level which the argument used when it is
@@ -197,7 +211,11 @@ class Game:
         if tile == 'C':
           #draws a Coin where C is there
           Coin(self,col*TILESIZE, row*TILESIZE)
-    #self.drawing_sprites()
+        if tile == 'A':
+            #draws a moving wall
+            Moving_wall(self, col*TILESIZE, row*TILESIZE)
+
+    # self.drawing_sprites()
   # output
   def draw(self):
     self.screen.fill((0, 0, 0))

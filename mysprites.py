@@ -45,8 +45,6 @@ class Player(Sprite):
             self.acc.x = self.speed
         if keys[pg.K_SPACE]:
             self.jump()
-        #if keys[pg.K_r]:
-           # Game.reset_Player(self)
     def jump(self):
         print('trying to jump...')
         print(self.vel.y)
@@ -244,3 +242,33 @@ class Coin(Sprite):
         self.y = y
     def update(self):
         pass
+class Moving_wall(Sprite):
+    def __init__(self, game, x, y):
+        self.groups = game.all_sprites , game.all_walls
+        Sprite.__init__(self, self.groups)
+        self.image = pg.Surface((TILESIZE, TILESIZE))
+        self.game=game
+        self.image.fill(Blue)
+        self.rect = self.image.get_rect()
+        self.game=game
+        self.rect.x = x
+        self.rect.y = y
+        # Each Mob is the size of 32 by 32 pixels or 1 TILESIZE ( in settings)
+        self.x = x * TILESIZE
+        self.y = y * TILESIZE
+        #the speed of the Mob is set to 30
+        self.speed = 10
+        #create if statement to make the Mobs bounce back when they hit the wall
+    # this method updates the Mob sprite so that it is always checking whether it is touching the side of the
+    # screen, so it can go backwards using an if statement.
+    def update(self):
+        self.rect.x += self.speed
+        # self.rect.y += self.speed
+        #if the x value is greater or less than either side of the screen
+        if self.rect.x > WIDTH or self.rect.x < 0:
+            #then reverse the speed by doing *= -1 and move the Mob down by 32
+            self.speed *= -1
+        #checks for if the y value of the Mob is greater than the height of the screen
+        if self.rect.y > HEIGHT:
+            #if it is then set the y-value to 0
+            self.rect.y = 0        
