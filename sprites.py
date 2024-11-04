@@ -8,7 +8,7 @@ from settings import *
 from random import randint
 
 # create the player class with a superclass of Sprite. Also, initializes and puts it in a group of all_sprites which can be accessed in other classes.
-class Player(Sprite):
+class Player(Sprite):        
     def __init__(self, game, x, y):
         self.groups = game.all_sprites
         Sprite.__init__(self, self.groups)

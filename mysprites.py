@@ -25,13 +25,12 @@ class Player(Sprite):
         self.vel = vec(0,0)
         self.acc = vec(0,0)
         self.speed = 5
-        # self.vx, self.vy = 0, 0
         self.coins = 0
         self.jump_power = 25
         self.jumping = False
-
         self.speed = player_speed
-        #self.vx, self.vy = 0, 0
+        self.cd = Cooldown()
+        self.mouse_pos = (0,0)
     #uses the typing library to collect input data from keyboard and make decisions based on it
     def get_keys(self):
         keys = pg.key.get_pressed()
@@ -45,6 +44,18 @@ class Player(Sprite):
             self.acc.x = self.speed
         if keys[pg.K_SPACE]:
             self.jump()
+        if pg.mouse.get_pressed()[0]:
+            self.mouse_pos = pg.mouse.get_pos()
+            self.shoot()
+    def shoot(self):
+        self.cd.event_time = floor(pg.time.get_ticks() / 1000)
+        if self.cd.delta > 0.1:
+            print(pg.mouse.get_pos())
+            print(self.pos)
+            # if pg.mouse.get_pos.x < self.pos.x:
+            #     Projectile.speed *= -1
+            Projectile(self.game, self.rect.x, self.rect.y)
+
     def jump(self):
         print('trying to jump...')
         print(self.vel.y)
@@ -113,7 +124,6 @@ class Player(Sprite):
                 self.jump_power+=5
                 #add a timer
                 self.jump_power-=5
-                
     # jumping mechanism in which if the player is touching a class from the all_walls group, then
     # it can jump the set jump power (in settings)
     def jump(self):
@@ -124,6 +134,7 @@ class Player(Sprite):
             self.jumping = True
             self.vel.y = -self.jump_power
     def update(self):
+        self.cd.ticking()
         self.acc = vec(0, GRAVITY)
         self.get_keys()
         # self.x += self.vx * self.game.dt
@@ -171,6 +182,11 @@ class Mob(Sprite):
         #create if statement to make the Mobs bounce back when they hit the wall
     # this method updates the Mob sprite so that it is always checking whether it is touching the side of the
     # screen, so it can go backwards using an if statement.
+    def collide_with_projectile(self,group,kill):
+            hits=pg.sprite.spritecollide(self,group,kill)
+            if hits:
+                if str(hits[0].__class__.__name__) == "Projectile":
+                    self.kill()
     def update(self):
         self.rect.x += self.speed
         # self.rect.y += self.speed
@@ -182,6 +198,7 @@ class Mob(Sprite):
         if self.rect.y > HEIGHT:
             #if it is then set the y-value to 0
             self.rect.y = 0            
+        self.collide_with_projectile(self.game.all_projectiles, True)
 # The Wall Class is part of the group all_walls in which interacts with the Player
 class Wall(Sprite):
     def __init__(self, game, x, y):
@@ -197,6 +214,25 @@ class Wall(Sprite):
         self.y = y * TILESIZE
     def update(self):
         pass
+class Projectile(Sprite):
+    def __init__(self, game, x, y):
+        self.groups = game.all_sprites , game.all_projectiles
+        Sprite.__init__(self, self.groups)
+        self.image = pg.Surface((TILESIZE/4, TILESIZE/4))
+        self.game=game
+        self.image.fill(Red)
+        self.rect = self.image.get_rect()
+        self.rect.x = x
+        self.rect.y = y
+        self.x = x * TILESIZE
+        self.y = y * TILESIZE
+        self.speed = 25
+    def update(self):
+        # self.rect.x -= self.speed
+        self.rect.x += self.speed
+        if self.rect.x < 0:
+            self.kill()
+        
 # This is the Speed Class that is part of the class all_powerups which has a shared interaction between it and the Player
 class Speed(Sprite):
     def __init__(self, game, x, y):
@@ -253,12 +289,11 @@ class Moving_wall(Sprite):
         self.game=game
         self.rect.x = x
         self.rect.y = y
-        # Each Mob is the size of 32 by 32 pixels or 1 TILESIZE ( in settings)
+        # Each Block is the size of 32 by 32 pixels or 1 TILESIZE ( in settings)
         self.x = x * TILESIZE
         self.y = y * TILESIZE
-        #the speed of the Mob is set to 30
-        self.speed = 10
-        #create if statement to make the Mobs bounce back when they hit the wall
+        self.speed = 5
+        #create if statement to make the Platforms bounce back when they hit the wall
     # this method updates the Mob sprite so that it is always checking whether it is touching the side of the
     # screen, so it can go backwards using an if statement.
     def update(self):

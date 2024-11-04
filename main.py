@@ -10,6 +10,10 @@ from os import path
 from utilities import *
 from typing import *
 '''
+Sources:
+https://www.pygame.org/docs/ref/mouse.html - used to see if mouse is clicked
+'''
+'''
 Goals:
 To finish all the different levels by collecting all the coins in each level without getting hit my mobs.
 Powerups will be provided differently in each level to make the game harder or easier.
@@ -83,6 +87,7 @@ class Game:
     self.drawing_sprites()
   def new(self):
     self.load_data()
+    coins_per_level=0
     #create game countdown
     self.game_timer= Timer(self)
     #countdown time
@@ -95,6 +100,7 @@ class Game:
     self.all_walls = pg.sprite.Group()
     self.all_powerups = pg.sprite.Group()
     self.all_coins = pg.sprite.Group()
+    self.all_projectiles= pg.sprite.Group()
     # self.mob = Mob(self, 0, 0)
     # self.wall = Wall(self, WIDTH//2,HEIGHT//2)
     # #added sprites(player, mob, etc...) to the all_sprites group already in sprites in sprites
@@ -175,7 +181,9 @@ class Game:
   '''
   #Change the value for the if statement to a variable amount that changes for each level
   def next_level_first(self,level):
-    if self.player.coins == 1:
+    # if level == 'lvl1.txt':
+    #   coins_per_level=6
+    if self.player.coins == 6:
       #next stage
       self.next_stage("lvl3.txt")
       #when player is recalled it resets the coins, so we put it back
