@@ -45,16 +45,17 @@ class Player(Sprite):
         if keys[pg.K_SPACE]:
             self.jump()
         if pg.mouse.get_pressed()[0]:
-            self.mouse_pos = pg.mouse.get_pos()
             self.shoot()
     def shoot(self):
         self.cd.event_time = floor(pg.time.get_ticks() / 1000)
         if self.cd.delta > 0.1:
             print(pg.mouse.get_pos())
             print(self.pos)
-            # if pg.mouse.get_pos.x < self.pos.x:
-            #     Projectile.speed *= -1
-            Projectile(self.game, self.rect.x, self.rect.y)
+            self.mouse_pos = pg.mouse.get_pos()
+            p=Projectile(self.game, self.rect.x, self.rect.y)
+            self.mouse_pos = pg.mouse.get_pos()
+            if self.mouse_pos[0] < self.pos.x:
+                p.speed *= -1
 
     def jump(self):
         print('trying to jump...')
@@ -158,13 +159,11 @@ class Player(Sprite):
         self.collide_with_stuff(self.game.all_powerups, True)
         self.collide_with_stuff(self.game.all_coins, True)
         self.collide_with_mobs(self.game.all_mobs)
-        if quit == True:
-            print("Quiter")
 # added Mob - moving objects
 #is a child class of Sprite
 # The Mob is in the group of all_mobs in which above the interactions between Mobs and Players can be created
 class Mob(Sprite):
-    def __init__(self, game, x, y):
+    def __init__(self, game, x, y, health):
         self.groups = game.all_sprites, game.all_mobs
         Sprite.__init__(self, self.groups)
         self.image = pg.Surface((32, 32))
@@ -174,6 +173,10 @@ class Mob(Sprite):
         self.game=game
         self.rect.x = x
         self.rect.y = y
+        self.health=1
+        # if self.game.loading== True:
+        #     self.health = 2
+        #     print("The Armor is Twice as thick now! MuhahahaHAHA!")
         # Each Mob is the size of 32 by 32 pixels or 1 TILESIZE ( in settings)
         self.x = x * TILESIZE
         self.y = y * TILESIZE
@@ -182,10 +185,12 @@ class Mob(Sprite):
         #create if statement to make the Mobs bounce back when they hit the wall
     # this method updates the Mob sprite so that it is always checking whether it is touching the side of the
     # screen, so it can go backwards using an if statement.
-    def collide_with_projectile(self,group,kill):
+    def collide_with_projectile(self,group,kill, health):
             hits=pg.sprite.spritecollide(self,group,kill)
             if hits:
                 if str(hits[0].__class__.__name__) == "Projectile":
+                    self.health -= 1
+                if self.health == 0:
                     self.kill()
     def update(self):
         self.rect.x += self.speed
@@ -198,7 +203,7 @@ class Mob(Sprite):
         if self.rect.y > HEIGHT:
             #if it is then set the y-value to 0
             self.rect.y = 0            
-        self.collide_with_projectile(self.game.all_projectiles, True)
+        self.collide_with_projectile(self.game.all_projectiles, self.health, True)
 # The Wall Class is part of the group all_walls in which interacts with the Player
 class Wall(Sprite):
     def __init__(self, game, x, y):
@@ -228,7 +233,6 @@ class Projectile(Sprite):
         self.y = y * TILESIZE
         self.speed = 25
     def update(self):
-        # self.rect.x -= self.speed
         self.rect.x += self.speed
         if self.rect.x < 0:
             self.kill()

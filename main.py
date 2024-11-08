@@ -53,6 +53,7 @@ class Game:
     #   Game.reset_Player(self)
     # Game.new(self)
   def load_level(self, level):
+    self.loading= True
     self.map = Map(path.join(self.game_folder, level))
     # create game countdown timer
     self.game_timer = Timer(self)
@@ -113,7 +114,7 @@ class Game:
             Wall(self, col*TILESIZE, row*TILESIZE)
           if tile == 'M':
             #draws a Mob where M is there
-            Mob(self,col*TILESIZE, row*TILESIZE)
+            Mob(self,col*TILESIZE, row*TILESIZE, health=3)
           if tile == 'P':
             #draws a Player where P is there
             self.player=Player(self,col, row)
@@ -187,7 +188,7 @@ class Game:
       #next stage
       self.next_stage("lvl3.txt")
       #when player is recalled it resets the coins, so we put it back
-      self.player.coins = 6
+      self.player.coins = 7
       #change other stuff     
   '''
   next_stage mechanism: First kills all the mobs to clear memory.
@@ -220,8 +221,8 @@ class Game:
           #draws a Coin where C is there
           Coin(self,col*TILESIZE, row*TILESIZE)
         if tile == 'A':
-            #draws a moving wall
-            Moving_wall(self, col*TILESIZE, row*TILESIZE)
+          #draws a moving wall
+          Moving_wall(self, col*TILESIZE, row*TILESIZE)
 
     #self.drawing_sprites()
   # output
@@ -233,6 +234,7 @@ class Game:
     # Displays FPS and Coins
     self.draw_text(self.screen, str(self.dt*1000), 18, White, WIDTH/30, HEIGHT/30)
     self.draw_text(self.screen, str(self.player.coins), 18, White, WIDTH-10, HEIGHT/30)
+    # self.draw_text(self.screen, str(self.mob.health), 18, White, WIDTH-5, HEIGHT/30)
     pg.display.flip()
 
 if __name__ == "__main__":
