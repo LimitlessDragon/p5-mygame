@@ -223,7 +223,7 @@ class Game:
             #draws a moving wall
             Moving_wall(self, col*TILESIZE, row*TILESIZE)
 
-    # self.drawing_sprites()
+    #self.drawing_sprites()
   # output
   def draw(self):
     self.screen.fill((0, 0, 0))
