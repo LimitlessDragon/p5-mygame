@@ -12,6 +12,9 @@ from typing import *
 '''
 Sources:
 https://www.pygame.org/docs/ref/mouse.html - used to see if mouse is clicked
+
+Code for putting Images: from Mr. Cozort
+Scratch.mit.edu for peach sprite image for Player
 '''
 '''
 Goals:
@@ -46,6 +49,10 @@ class Game:
   def load_data(self):
     self.game_folder = path.dirname(__file__)
     self.map = Map(path.join(self.game_folder, 'lvl1.txt'))
+    self.game_folder = path.dirname(__file__)
+    self.img_folder = path.join(self.game_folder, 'img')
+    self.player_img = pg.image.load(path.join(self.img_folder, 'peach1.png'))
+    self.speed_img = pg.image.load(path.join(self.img_folder, 'image.png'))
     # Player.get_keys(self)
     
   # def reset_Player(self):
@@ -201,28 +208,28 @@ class Game:
       s.kill()
     self.map = Map(path.join(self.game_folder, level))
     for row, tiles in enumerate(self.map.data):
-      for col, tile in enumerate(tiles):
-        if tile == '1':
-          #if 1 is in the text file, then draw a wall
-          Wall(self, col*TILESIZE, row*TILESIZE)
-        if tile == 'M':
-          #draws a Mob where M is there
-          Mob(self,col*TILESIZE, row*TILESIZE)
-        if tile == 'P':
-          #draws a Player where P is there
-          self.player = Player(self,col, row)
-        if tile == 'U':
-          #draws a Powerup where U is there
-          Speed(self,col*TILESIZE, row*TILESIZE)
-        if tile == 'J':
-          #draws a Powerup where U is there
-          Jump(self,col*TILESIZE, row*TILESIZE)
-        if tile == 'C':
-          #draws a Coin where C is there
-          Coin(self,col*TILESIZE, row*TILESIZE)
-        if tile == 'A':
-          #draws a moving wall
-          Moving_wall(self, col*TILESIZE, row*TILESIZE)
+        for col, tile in enumerate(tiles):
+          if tile == '1':
+            #if 1 is in the text file, then draw a wall
+            Wall(self, col*TILESIZE, row*TILESIZE)
+          if tile == 'M':
+            #draws a Mob where M is there
+            Mob(self,col*TILESIZE, row*TILESIZE, health=3)
+          if tile == 'P':
+            #draws a Player where P is there
+            self.player=Player(self,col, row)
+          if tile == 'U':
+            #draws a Powerup where U is there
+            Speed(self,col*TILESIZE, row*TILESIZE)
+          if tile == 'J':
+            #draws a Powerup where U is there
+            Jump(self,col*TILESIZE, row*TILESIZE)
+          if tile == 'C':
+            #draws a Coin where C is there
+            Coin(self,col*TILESIZE, row*TILESIZE)
+          if tile == 'A':
+            #draws a moving wall
+            Moving_wall(self, col*TILESIZE, row*TILESIZE)
 
     #self.drawing_sprites()
   # output

@@ -13,14 +13,14 @@ from utilities import *
 # create the player class with a superclass of Sprite. Also, initializes and puts it in a group of all_sprites which can be accessed in other classes.
 class Player(Sprite):
     def __init__(self, game, x, y):
-        self.game = game
         self.groups = game.all_sprites
         Sprite.__init__(self, self.groups)
-        self.image = pg.Surface((32, 32))
+        self.game = game
+        # self.image = pg.Surface((32, 32))
+        self.image = self.game.player_img
+        self.image.set_colorkey(Black)
+        # self.image.fill(RED)
         self.rect = self.image.get_rect()
-        self.image.fill(Red)
-        # self.rect.x = x
-        # self.rect.y = y
         self.pos = vec(x*TILESIZE, y*TILESIZE)
         self.vel = vec(0,0)
         self.acc = vec(0,0)
@@ -242,7 +242,9 @@ class Speed(Sprite):
     def __init__(self, game, x, y):
         self.groups = game.all_sprites , game.all_powerups
         Sprite.__init__(self, self.groups)
-        self.image = pg.Surface((TILESIZE, TILESIZE))
+        self.image = self.game.speed_img
+        self.image.set_colorkey(White)
+        self.rect = self.image.get_rect()
         self.game=game
         self.image.fill(Orange)
         self.rect = self.image.get_rect()
