@@ -244,7 +244,7 @@ class Game:
     # Displays FPS and Coins
     self.draw_text(self.screen, str(self.dt*1000), 18, White, WIDTH/30, HEIGHT/30)
     self.draw_text(self.screen, str(self.player.coins), 18, White, WIDTH-10, HEIGHT/30)
-    self.draw_text(self.screen, str(self.player.health), 18, White, WIDTH-5, HEIGHT/20)
+    self.draw_text(self.screen, str(self.player.health), 18, White, WIDTH-5, HEIGHT/25)
     pg.display.flip()
 
 if __name__ == "__main__":
