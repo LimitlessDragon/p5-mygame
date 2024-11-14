@@ -29,10 +29,9 @@ class Player(Sprite):
         self.jump_power = 25
         self.jumping = False
         self.speed = player_speed
-        self.invulnerable_cd = Cooldown()
-        self.mobs_can_attack = True
         self.mouse_pos = (0,0)
         self.health = 3
+        self.invulnerable = Cooldown()
         self.mobs_can_attack= True
         self.cd = Cooldown()
     #uses the typing library to collect input data from keyboard and make decisions based on it
@@ -97,29 +96,29 @@ class Player(Sprite):
     # The mob collision system is similar to that of the wall's where from 4 directions it check whether the Player
     # is touching the Mob. If so it switches to the "lvl2.txt" which is the game_over stage using the next_stage
     # function in the self.update() part of main.py
-    def collide_with_mobs(self, dir, mobs_can_attack):
-        if dir == 'x':
-            hits = pg.sprite.spritecollide(self, self.game.all_mobs, False)
-            if hits:
-                if self.pos.x > 0 and self.mobs_can_attack == True:
-                    self.mob_can_attack = False
-                    self.invulnerable_cd.event_time = floor(pg.time.get_ticks()/1000)
-                if self.pos.x < 0 and self.mobs_can_attack == True:
-                    self.health -=1
-                    self.mob_can_attack = False
-                    self.invulnerable_cd.event_time = floor(pg.time.get_ticks() / 1000)
+    # def collide_with_mobs(self, dir, mobs_can_attack):
+    #     if dir == 'x':
+    #         hits = pg.sprite.spritecollide(self, self.game.all_mobs, False)
+    #         if hits:
+    #             if self.pos.x > 0 and self.mobs_can_attack == True:
+    #                 self.mob_can_attack = False
+    #                 self.invulnerable_cd.event_time = floor(pg.time.get_ticks()/1000)
+    #             if self.pos.x < 0 and self.mobs_can_attack == True:
+    #                 self.health -=1
+    #                 self.mob_can_attack = False
+    #                 self.invulnerable_cd.event_time = floor(pg.time.get_ticks() / 1000)
                     
-        if dir == 'y':
-            hits = pg.sprite.spritecollide(self, self.game.all_mobs, False)
-            if hits:
-                if self.pos.y > 0 and self.mobs_can_attack == True:
-                    self.health -=1
-                    self.mob_can_attack = False
-                    self.invulnerable_cd.event_time = floor(pg.time.get_ticks() / 1000)
-                if self.pos.y < 0  and self.mobs_can_attack == True:
-                    self.health -=1
-                    self.mob_can_attack = False
-                    self.invulnerable_cd.event_time = floor(pg.time.get_ticks() / 1000)
+    #     if dir == 'y':
+    #         hits = pg.sprite.spritecollide(self, self.game.all_mobs, False)
+    #         if hits:
+    #             if self.pos.y > 0 and self.mobs_can_attack == True:
+    #                 self.health -=1
+    #                 self.mob_can_attack = False
+    #                 self.invulnerable_cd.event_time = floor(pg.time.get_ticks() / 1000)
+    #             if self.pos.y < 0  and self.mobs_can_attack == True:
+    #                 self.health -=1
+    #                 self.mob_can_attack = False
+    #                 self.invulnerable_cd.event_time = floor(pg.time.get_ticks() / 1000)
     # collide_with_stuff creates interactions between the all_powerups groups and can change the speed, jump_power, 
     # it also needs a timer
     def collide_with_stuff(self,group,kill):
@@ -136,7 +135,14 @@ class Player(Sprite):
                 self.jump_power+=5
                 print("now time to wait")
             if str(hits[0].__class__.__name__) == "Mob":
-                self.health-=1
+                self.invulnerable.event_time = floor(pg.time.get_ticks()/1000)
+                if self.invulnerable.delta > .01:
+                    self.health -= 1
+                if self.vel.y > 0:
+                    print("collided with mob")
+                    # hits[0].kill()
+                else:
+                    print("ouch I was hurt!!!")
     # jumping mechanism in which if the player is touching a class from the all_walls group, then
     # it can jump the set jump power (in settings)
     def jump(self):
@@ -148,15 +154,9 @@ class Player(Sprite):
             self.vel.y = -self.jump_power
     def update(self):
         self.cd.ticking()
-        self.invulnerable_cd.ticking()
-        if self.invulnerable_cd.delta > 3:
-            print("i can get hit again")
-            self.mob_can_attack = True
-        # if self.mobs_can_attack:
-        #     self.collide_with_mobs(self.game.all_powerups, True)
-        if self.health < 0:
+        self.invulnerable.ticking()
+        if self.health == 0:
             self.game.next_stage("lvl2.txt")
-            print("The Player's Health: "+str(self.health))
         self.acc = vec(0, GRAVITY)
         self.get_keys()
         self.acc.x += self.vel.x * FRICTION
@@ -167,16 +167,13 @@ class Player(Sprite):
         
         self.collide_with_stuff(self.game.all_powerups, True)
         self.collide_with_stuff(self.game.all_coins, True)
-        self.collide_with_mobs(self.game.all_mobs, True)
-        self.rect.x = self.pos.x
+        self.collide_with_stuff(self.game.all_mobs, False)
         self.collide_with_walls('x')
-        self.collide_with_mobs('x', True)
         self.rect.y = self.pos.y
         self.collide_with_walls('y')
-        self.collide_with_mobs('y', True)
         self.collide_with_stuff(self.game.all_powerups, True)
         self.collide_with_stuff(self.game.all_coins, True)
-        self.collide_with_mobs(self.game.all_mobs, True)
+        # self.collide_with_mobs(self.game.all_mobs, True)
 # added Mob - moving objects
 #is a child class of Sprite
 # The Mob is in the group of all_mobs in which above the interactions between Mobs and Players can be created
