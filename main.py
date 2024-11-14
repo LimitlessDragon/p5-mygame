@@ -15,6 +15,9 @@ https://www.pygame.org/docs/ref/mouse.html - used to see if mouse is clicked
 
 Code for putting Images: from Mr. Cozort
 Scratch.mit.edu and google.com for sprite images/ inspirations for Sprites
+
+https://www.tpsearchtool.com/images/superboy-2d-game-character-sprites-276-by-pasilan-graphicriver
+Sprite Images
 '''
 '''
 Goals:
@@ -241,7 +244,7 @@ class Game:
     # Displays FPS and Coins
     self.draw_text(self.screen, str(self.dt*1000), 18, White, WIDTH/30, HEIGHT/30)
     self.draw_text(self.screen, str(self.player.coins), 18, White, WIDTH-10, HEIGHT/30)
-    # self.draw_text(self.screen, str(self.mob.health), 18, White, WIDTH-5, HEIGHT/30)
+    self.draw_text(self.screen, str(self.player.health), 18, White, WIDTH-5, HEIGHT/20)
     pg.display.flip()
 
 if __name__ == "__main__":
