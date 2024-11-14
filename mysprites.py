@@ -30,7 +30,9 @@ class Player(Sprite):
         self.jumping = False
         self.speed = player_speed
         self.cd = Cooldown()
+        self.invulnerable = Cooldown()
         self.mouse_pos = (0,0)
+        self.health = 3
     #uses the typing library to collect input data from keyboard and make decisions based on it
     def get_keys(self):
         keys = pg.key.get_pressed()
@@ -56,7 +58,6 @@ class Player(Sprite):
             self.mouse_pos = pg.mouse.get_pos()
             if self.mouse_pos[0] < self.pos.x:
                 p.speed *= -1
-
     def jump(self):
         print('trying to jump...')
         print(self.vel.y)
@@ -99,32 +100,40 @@ class Player(Sprite):
             hits = pg.sprite.spritecollide(self, self.game.all_mobs, False)
             if hits:
                 if self.pos.x > 0:
-                    self.game.next_stage("lvl2.txt")
+                    self.health -=1
+                    print("rip")
+                    self.invulnerable = floor(pg.time.get_ticks() / 1000)
                 if self.pos.x < 0:
-                    self.game.next_stage("lvl2.txt")
+                    self.health -=1
+                    self.invulnerable = floor(pg.time.get_ticks() / 1000)
+                    print("rip")
+                    
         if dir == 'y':
             hits = pg.sprite.spritecollide(self, self.game.all_mobs, False)
             if hits:
                 if self.pos.y > 0:
-                    self.game.next_stage("lvl2.txt")
+                    self.health -=1
+                    print("rip")
+                    self.invulnerable = floor(pg.time.get_ticks() / 1000)
                 if self.pos.y < 0:
-                    self.game.next_stage("lvl2.txt")
+                    self.health -=1
+                    print("rip")
+                    self.invulnerable = floor(pg.time.get_ticks() / 1000)
     # colldie_with_stuff creates interactions between the all_powerups groups and can change the speed, jump_power, 
     # it also needs a timer
     def collide_with_stuff(self,group,kill):
         hits=pg.sprite.spritecollide(self,group,kill)
         if hits:
             if str(hits[0].__class__.__name__) == "Speed":
+                print("I got one")
                 self.speed+=5
-                print("Speed Boost!")
             if str(hits[0].__class__.__name__) == "Coin":
                 print("You got a Coin!")
                 self.coins+=1
             if str(hits[0].__class__.__name__) == "Jump":
                 print("Jump Boost!")
                 self.jump_power+=5
-                #add a timer
-                self.jump_power-=5
+                print("now time to wait")
     # jumping mechanism in which if the player is touching a class from the all_walls group, then
     # it can jump the set jump power (in settings)
     def jump(self):
@@ -136,8 +145,13 @@ class Player(Sprite):
             self.vel.y = -self.jump_power
     def update(self):
         self.cd.ticking()
+        self.invulnerable.ticking()
         self.acc = vec(0, GRAVITY)
         self.get_keys()
+        if self.invulnerable.cd > 1:
+            self.collide_with_mobs = True
+        if self.health == 0:
+            self.game.next_stage("lvl2.txt")
         # self.x += self.vx * self.game.dt
         # self.y += self.vy * self.game.dt
         # reverse order to fix collision issues
@@ -192,6 +206,16 @@ class Mob(Sprite):
                     self.health -= 1
                 if self.health == 0:
                     self.kill()
+    # def shoot(self):
+    #     self.cd.event_time = floor(pg.time.get_ticks() / 1000)
+    #     if self.cd.delta > 0.1:
+    #         print(pg.mouse.get_pos())
+    #         print(self.pos)
+    #         self.mouse_pos = pg.mouse.get_pos()
+    #         p=Projectile(self.game, self.rect.x, self.rect.y)
+    #         self.mouse_pos = pg.mouse.get_pos()
+    #         if self.mouse_pos[0] < self.pos.x:
+    #             p.speed *= -1
     def update(self):
         self.rect.x += self.speed
         # self.rect.y += self.speed
@@ -242,11 +266,11 @@ class Speed(Sprite):
     def __init__(self, game, x, y):
         self.groups = game.all_sprites , game.all_powerups
         Sprite.__init__(self, self.groups)
+        self.game = game
         self.image = self.game.speed_img
-        self.image.set_colorkey(White)
+        self.image.set_colorkey(Black)
         self.rect = self.image.get_rect()
         self.game=game
-        self.image.fill(Orange)
         self.rect = self.image.get_rect()
         self.rect.x = x
         self.rect.y = y
@@ -288,7 +312,7 @@ class Moving_wall(Sprite):
     def __init__(self, game, x, y):
         self.groups = game.all_sprites , game.all_walls
         Sprite.__init__(self, self.groups)
-        self.image = pg.Surface((TILESIZE, TILESIZE))
+        self.image = pg.Surface((5*TILESIZE, TILESIZE))
         self.game=game
         self.image.fill(Blue)
         self.rect = self.image.get_rect()
@@ -306,10 +330,5 @@ class Moving_wall(Sprite):
         self.rect.x += self.speed
         # self.rect.y += self.speed
         #if the x value is greater or less than either side of the screen
-        if self.rect.x > WIDTH or self.rect.x < 0:
-            #then reverse the speed by doing *= -1 and move the Mob down by 32
+        if self.rect.x > WIDTH - TILESIZE or self.rect.x < 0:
             self.speed *= -1
-        #checks for if the y value of the Mob is greater than the height of the screen
-        if self.rect.y > HEIGHT:
-            #if it is then set the y-value to 0
-            self.rect.y = 0        

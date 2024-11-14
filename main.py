@@ -14,7 +14,7 @@ Sources:
 https://www.pygame.org/docs/ref/mouse.html - used to see if mouse is clicked
 
 Code for putting Images: from Mr. Cozort
-Scratch.mit.edu for peach sprite image for Player
+Scratch.mit.edu and google.com for sprite images/ inspirations for Sprites
 '''
 '''
 Goals:
