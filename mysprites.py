@@ -31,7 +31,7 @@ class Player(Sprite):
         self.invulnerable = Cooldown()
         self.mobs_can_attack= True
         self.cd = Cooldown()
-        self.jump_power = 25
+        self.jump_power = 18
         self.jumping = False
         self.speed = player_speed
     #uses the typing library to collect input data from keyboard and make decisions based on it
@@ -62,10 +62,9 @@ class Player(Sprite):
         whits = pg.sprite.spritecollide(self, self.game.all_walls, False)
         phits = pg.sprite.spritecollide(self, self.game.all_walls, False)
         self.rect.y -= 2
-        if not self.jumping and whits or phits:
+        if whits or phits and not self.jumping:
             self.jumping = True
             self.vel.y = -self.jump_power
-            # print('still trying to jump...')
         
         #creates the collision mechanic to check whether walls are touching the Player in which to
         # make sure the Player can't go through walls
@@ -90,38 +89,6 @@ class Player(Sprite):
                 self.vel.y = 0
                 self.rect.y = self.pos.y
                 self.jumping = False
-                # print("Collided on x axis")
-        #     else:
-        #         print("not working...for hits")
-        # # else:
-        #     print("not working for dir check")
-
-    # The mob collision system is similar to that of the wall's where from 4 directions it check whether the Player
-    # is touching the Mob. If so it switches to the "lvl2.txt" which is the game_over stage using the next_stage
-    # function in the self.update() part of main.py
-    # def collide_with_mobs(self, dir, mobs_can_attack):
-    #     if dir == 'x':
-    #         hits = pg.sprite.spritecollide(self, self.game.all_mobs, False)
-    #         if hits:
-    #             if self.pos.x > 0 and self.mobs_can_attack == True:
-    #                 self.mob_can_attack = False
-    #                 self.invulnerable_cd.event_time = floor(pg.time.get_ticks()/1000)
-    #             if self.pos.x < 0 and self.mobs_can_attack == True:
-    #                 self.health -=1
-    #                 self.mob_can_attack = False
-    #                 self.invulnerable_cd.event_time = floor(pg.time.get_ticks() / 1000)
-                    
-    #     if dir == 'y':
-    #         hits = pg.sprite.spritecollide(self, self.game.all_mobs, False)
-    #         if hits:
-    #             if self.pos.y > 0 and self.mobs_can_attack == True:
-    #                 self.health -=1
-    #                 self.mob_can_attack = False
-    #                 self.invulnerable_cd.event_time = floor(pg.time.get_ticks() / 1000)
-    #             if self.pos.y < 0  and self.mobs_can_attack == True:
-    #                 self.health -=1
-    #                 self.mob_can_attack = False
-    #                 self.invulnerable_cd.event_time = floor(pg.time.get_ticks() / 1000)
     # collide_with_stuff creates interactions between the all_powerups groups and can change the speed, jump_power, 
     # it also needs a timer
     def collide_with_stuff(self,group,kill):
@@ -135,7 +102,7 @@ class Player(Sprite):
                 self.coins+=1
             if str(hits[0].__class__.__name__) == "Jump":
                 print("Jump Boost!")
-                self.jump_power+=5
+                self.jump_power+=2
                 print("now time to wait")
             if str(hits[0].__class__.__name__) == "Mob":
                 self.invulnerable.event_time = floor(pg.time.get_ticks()/1000)
@@ -146,15 +113,6 @@ class Player(Sprite):
                     # hits[0].kill()
                 else:
                     print("ouch I was hurt!!!")
-    # jumping mechanism in which if the player is touching a class from the all_walls group, then
-    # it can jump the set jump power (in settings)
-    # def jump(self):
-    #     self.rect.y += 2
-    #     hits = pg.sprite.spritecollide(self, self.game.all_walls, False)
-    #     self.rect.y -= 2
-    #     if hits and not self.jumping:
-    #         self.jumping = True
-    #         self.vel.y = -self.jump_power
     def update(self):
         self.cd.ticking()
         self.invulnerable.ticking()

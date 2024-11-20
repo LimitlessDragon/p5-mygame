@@ -1,5 +1,5 @@
 # variables used in main.py and mysprites.py
-GRAVITY = 1.9
+GRAVITY = 1.0
 FRICTION = -0.35
 FPS=30
 WIDTH = 1024
