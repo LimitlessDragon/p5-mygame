@@ -56,8 +56,6 @@ class Player(Sprite):
             if self.mouse_pos[0] < self.pos.x:
                 p.speed *= -1
     def jump(self):
-        # print("im trying to jump")
-        print(self.vel.y)
         self.rect.y += 2
         whits = pg.sprite.spritecollide(self, self.game.all_walls, False)
         phits = pg.sprite.spritecollide(self, self.game.all_walls, False)
@@ -151,7 +149,7 @@ class Mob(Sprite):
         self.rect.y = y
         self.x = x * TILESIZE
         self.y = y * TILESIZE
-        self.health=1
+        self.health = 3
         # if self.game.loading== True:
         #     self.health = 2
         #     print("The Armor is Twice as thick now! MuhahahaHAHA!")
@@ -166,7 +164,9 @@ class Mob(Sprite):
             if hits:
                 if str(hits[0].__class__.__name__) == "Projectile":
                     self.health -= 1
+                    print("oof")
                 if self.health == 0:
+                    print("wasted")
                     self.kill()
     # def shoot(self):
     #     self.cd.event_time = floor(pg.time.get_ticks() / 1000)

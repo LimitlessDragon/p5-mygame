@@ -11,6 +11,8 @@ from utilities import *
 from typing import *
 '''
 Sources:
+Health bar from Chris Cozort
+
 https://www.pygame.org/docs/ref/mouse.html - used to see if mouse is clicked
 
 Code for putting Images: from Mr. Cozort
@@ -52,6 +54,7 @@ def draw_stat_bar(surf, x, y, w, h, pct, fill_color, outline_color):
     fill = (pct / 100) * BAR_LENGTH
     outline_rect = pg.Rect(x, y, BAR_LENGTH, BAR_HEIGHT)
     fill_rect = pg.Rect(x, y, fill, BAR_HEIGHT)
+    pg.draw.rect(surf, Black, outline_rect)
     pg.draw.rect(surf, fill_color, fill_rect)
     pg.draw.rect(surf, outline_color, outline_rect, 2)
 # create a game class that carries all the properties of the game and methods
