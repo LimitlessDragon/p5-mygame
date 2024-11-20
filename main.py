@@ -18,6 +18,10 @@ Scratch.mit.edu and google.com for sprite images/ inspirations for Sprites
 
 https://www.tpsearchtool.com/images/superboy-2d-game-character-sprites-276-by-pasilan-graphicriver
 Sprite Images
+
+
+I got an idea for my mob from this link:
+https://www.vecteezy.com/vector-art/14762634-cute-red-monster-vector
 '''
 '''
 Goals:
@@ -56,6 +60,7 @@ class Game:
     self.img_folder = path.join(self.game_folder, 'img')
     self.player_img = pg.image.load(path.join(self.img_folder, 'peach1.png'))
     self.speed_img = pg.image.load(path.join(self.img_folder, 'image.png'))
+    self.mob_img = pg.image.load(path.join(self.img_folder, 'mob.png'))
     # Player.get_keys(self)
     
   # def reset_Player(self):
@@ -124,7 +129,7 @@ class Game:
             Wall(self, col*TILESIZE, row*TILESIZE)
           if tile == 'M':
             #draws a Mob where M is there
-            Mob(self,col*TILESIZE, row*TILESIZE, health=3)
+            Mob(self,col*TILESIZE, row*TILESIZE)
           if tile == 'P':
             #draws a Player where P is there
             self.player=Player(self,col, row)
@@ -217,7 +222,7 @@ class Game:
             Wall(self, col*TILESIZE, row*TILESIZE)
           if tile == 'M':
             #draws a Mob where M is there
-            Mob(self,col*TILESIZE, row*TILESIZE, health=3)
+            Mob(self,col*TILESIZE, row*TILESIZE)
           if tile == 'P':
             #draws a Player where P is there
             self.player=Player(self,col, row)

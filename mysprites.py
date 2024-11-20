@@ -26,25 +26,21 @@ class Player(Sprite):
         self.acc = vec(0,0)
         self.speed = 5
         self.coins = 0
-        self.jump_power = 25
-        self.jumping = False
-        self.speed = player_speed
         self.mouse_pos = (0,0)
         self.health = 3
         self.invulnerable = Cooldown()
         self.mobs_can_attack= True
         self.cd = Cooldown()
+        self.jump_power = 25
+        self.jumping = False
+        self.speed = player_speed
     #uses the typing library to collect input data from keyboard and make decisions based on it
     def get_keys(self):
         keys = pg.key.get_pressed()
-        # if keys[pg.K_w]:
-        #     self.vy -= self.speed
         if keys[pg.K_a]:
-            self.acc.x = -self.speed
-        # if keys[pg.K_s]:
-        #     self.vy += self.speed
+            self.vel.x -= self.speed
         if keys[pg.K_d]:
-            self.acc.x = self.speed
+            self.vel.x += self.speed
         if keys[pg.K_SPACE]:
             self.jump()
         if pg.mouse.get_pressed()[0]:
@@ -60,15 +56,16 @@ class Player(Sprite):
             if self.mouse_pos[0] < self.pos.x:
                 p.speed *= -1
     def jump(self):
-        print('trying to jump...')
+        # print("im trying to jump")
         print(self.vel.y)
-        self.rect.y +=2
-        hits = pg.sprite.spritecollide(self,self.game.all_walls, False)
-        self.rect.y -=2
-        if hits and not self.jumping:
+        self.rect.y += 2
+        whits = pg.sprite.spritecollide(self, self.game.all_walls, False)
+        phits = pg.sprite.spritecollide(self, self.game.all_walls, False)
+        self.rect.y -= 2
+        if not self.jumping and whits or phits:
             self.jumping = True
             self.vel.y = -self.jump_power
-            print("still trying to jump")
+            # print('still trying to jump...')
         
         #creates the collision mechanic to check whether walls are touching the Player in which to
         # make sure the Player can't go through walls
@@ -82,17 +79,23 @@ class Player(Sprite):
                     self.pos.x = hits[0].rect.right
                 self.vel.x = 0
                 self.rect.x = self.pos.x
-                #we added y collision
         if dir == 'y':
             hits = pg.sprite.spritecollide(self, self.game.all_walls, False)
             if hits:
                 if self.vel.y > 0:
                     self.pos.y = hits[0].rect.top - TILESIZE
+                    self.vel.y = 0
                 if self.vel.y < 0:
                     self.pos.y = hits[0].rect.bottom
                 self.vel.y = 0
                 self.rect.y = self.pos.y
                 self.jumping = False
+                # print("Collided on x axis")
+        #     else:
+        #         print("not working...for hits")
+        # # else:
+        #     print("not working for dir check")
+
     # The mob collision system is similar to that of the wall's where from 4 directions it check whether the Player
     # is touching the Mob. If so it switches to the "lvl2.txt" which is the game_over stage using the next_stage
     # function in the self.update() part of main.py
@@ -145,18 +148,19 @@ class Player(Sprite):
                     print("ouch I was hurt!!!")
     # jumping mechanism in which if the player is touching a class from the all_walls group, then
     # it can jump the set jump power (in settings)
-    def jump(self):
-        self.rect.y += 2
-        hits = pg.sprite.spritecollide(self, self.game.all_walls, False)
-        self.rect.y -= 2
-        if hits and not self.jumping:
-            self.jumping = True
-            self.vel.y = -self.jump_power
+    # def jump(self):
+    #     self.rect.y += 2
+    #     hits = pg.sprite.spritecollide(self, self.game.all_walls, False)
+    #     self.rect.y -= 2
+    #     if hits and not self.jumping:
+    #         self.jumping = True
+    #         self.vel.y = -self.jump_power
     def update(self):
         self.cd.ticking()
         self.invulnerable.ticking()
         if self.health == 0:
             self.game.next_stage("lvl2.txt")
+        self.pos += self.vel + 0.5 * self.acc
         self.acc = vec(0, GRAVITY)
         self.get_keys()
         self.acc.x += self.vel.x * FRICTION
@@ -164,37 +168,36 @@ class Player(Sprite):
         if abs(self.vel.x) < 0.1:
             self.vel.x = 0
         self.pos += self.vel + 0.5 * self.acc
-        
-        self.collide_with_stuff(self.game.all_powerups, True)
-        self.collide_with_stuff(self.game.all_coins, True)
-        self.collide_with_stuff(self.game.all_mobs, False)
+        self.rect.x = self.pos.x
         self.collide_with_walls('x')
         self.rect.y = self.pos.y
         self.collide_with_walls('y')
         self.collide_with_stuff(self.game.all_powerups, True)
         self.collide_with_stuff(self.game.all_coins, True)
+        self.collide_with_stuff(self.game.all_mobs, False)
         # self.collide_with_mobs(self.game.all_mobs, True)
 # added Mob - moving objects
 #is a child class of Sprite
 # The Mob is in the group of all_mobs in which above the interactions between Mobs and Players can be created
 class Mob(Sprite):
-    def __init__(self, game, x, y, health):
+    def __init__(self, game, x, y):
         self.groups = game.all_sprites, game.all_mobs
         Sprite.__init__(self, self.groups)
-        self.image = pg.Surface((32, 32))
-        # color of the mob is being set to green
-        self.image.fill(Green)
+        self.game = game
+        # self.image = pg.Surface((32, 32))
+        self.image = self.game.mob_img
+        self.image.set_colorkey(Black)
         self.rect = self.image.get_rect()
-        self.game=game
+        # self.image.fill(RED)
         self.rect.x = x
         self.rect.y = y
+        self.x = x * TILESIZE
+        self.y = y * TILESIZE
         self.health=1
         # if self.game.loading== True:
         #     self.health = 2
         #     print("The Armor is Twice as thick now! MuhahahaHAHA!")
         # Each Mob is the size of 32 by 32 pixels or 1 TILESIZE ( in settings)
-        self.x = x * TILESIZE
-        self.y = y * TILESIZE
         #the speed of the Mob is set to 30
         self.speed = 25
         #create if statement to make the Mobs bounce back when they hit the wall
