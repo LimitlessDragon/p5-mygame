@@ -69,11 +69,12 @@ class Game:
   def load_data(self):
     self.game_folder = path.dirname(__file__)
     self.map = Map(path.join(self.game_folder, 'lvl1.txt'))
-    self.game_folder = path.dirname(__file__)
     self.img_folder = path.join(self.game_folder, 'img')
     self.player_img = pg.image.load(path.join(self.img_folder, 'peach1.png'))
     self.speed_img = pg.image.load(path.join(self.img_folder, 'image.png'))
-    self.mob_img = pg.image.load(path.join(self.img_folder, 'mob.png'))
+    self.mob_image = 'mob.png'
+    self.mob_img = pg.image.load(path.join(self.img_folder, self.mob_image))
+    # self.mob_3_img = pg.image.load(path.join(self.img_folder, 'mob_full_health.png'))
     # Player.get_keys(self)
     
   # def reset_Player(self):
@@ -97,7 +98,7 @@ class Game:
             Wall(self, col*TILESIZE, row*TILESIZE)
           if tile == 'M':
             #draws a Mob where M is there
-            Mob(self,col*TILESIZE, row*TILESIZE)
+            self.mob = Mob(self,col*TILESIZE, row*TILESIZE)
           if tile == 'P':
             #draws a Player where P is there
             self.player=Player(self,col, row)
@@ -131,7 +132,7 @@ class Game:
     self.all_powerups = pg.sprite.Group()
     self.all_coins = pg.sprite.Group()
     self.all_projectiles= pg.sprite.Group()
-    # self.mob = Mob(self, 0, 0)
+
     # self.wall = Wall(self, WIDTH//2,HEIGHT//2)
     # #added sprites(player, mob, etc...) to the all_sprites group already in sprites in sprites
     #for loop to add more walls/sprites from the group all_sprites
@@ -143,7 +144,7 @@ class Game:
             Wall(self, col*TILESIZE, row*TILESIZE)
           if tile == 'M':
             #draws a Mob where M is there
-            Mob(self,col*TILESIZE, row*TILESIZE)
+            self.mob = Mob(self,col*TILESIZE, row*TILESIZE)
           if tile == 'P':
             #draws a Player where P is there
             self.player=Player(self,col, row)
@@ -181,7 +182,7 @@ class Game:
       self.events()
       # process
       self.update()
-      # output
+      # outputa
       self.draw()
 
     pg.quit()
@@ -192,6 +193,9 @@ class Game:
           self.playing = False
   # Makes sure the sprites are constantly being update on the screen with their values/data
   def update(self):
+    if self.mob.health <= 2:
+      self.mob_image = 'mob_full_health.png'
+      self.mob_img = pg.image.load(path.join(self.img_folder, self.mob_image))
     self.next_level_first(self)
     self.game_timer.ticking()
     # update all the sprites...and I MEAN ALL OF THEM
@@ -228,6 +232,7 @@ class Game:
   def next_stage(self, level):
     for s in self.all_sprites:
       s.kill()
+      self.mob_image = 'mob.png'
     self.map = Map(path.join(self.game_folder, level))
     for row, tiles in enumerate(self.map.data):
         for col, tile in enumerate(tiles):
@@ -236,7 +241,7 @@ class Game:
             Wall(self, col*TILESIZE, row*TILESIZE)
           if tile == 'M':
             #draws a Mob where M is there
-            Mob(self,col*TILESIZE, row*TILESIZE)
+            self.mob = Mob(self,col*TILESIZE, row*TILESIZE)
           if tile == 'P':
             #draws a Player where P is there
             self.player=Player(self,col, row)

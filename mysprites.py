@@ -47,7 +47,7 @@ class Player(Sprite):
             self.shoot()
     def shoot(self):
         self.cd.event_time = floor(pg.time.get_ticks() / 1000)
-        if self.cd.delta > 0.1:
+        if self.cd.delta > 0.01:
             print(pg.mouse.get_pos())
             print(self.pos)
             self.mouse_pos = pg.mouse.get_pos()
@@ -140,7 +140,9 @@ class Mob(Sprite):
         self.groups = game.all_sprites, game.all_mobs
         Sprite.__init__(self, self.groups)
         self.game = game
+        # self.mob_skin = self.game.mob_img
         # self.image = pg.Surface((32, 32))
+        # self.image = self.mob_skin
         self.image = self.game.mob_img
         self.image.set_colorkey(Black)
         self.rect = self.image.get_rect()
@@ -150,9 +152,6 @@ class Mob(Sprite):
         self.x = x * TILESIZE
         self.y = y * TILESIZE
         self.health = 3
-        # if self.game.loading== True:
-        #     self.health = 2
-        #     print("The Armor is Twice as thick now! MuhahahaHAHA!")
         # Each Mob is the size of 32 by 32 pixels or 1 TILESIZE ( in settings)
         #the speed of the Mob is set to 30
         self.speed = 25
@@ -179,6 +178,14 @@ class Mob(Sprite):
     #         if self.mouse_pos[0] < self.pos.x:
     #             p.speed *= -1
     def update(self):
+        self.image = self.game.mob_img
+        self.image.set_colorkey(Black)
+        # print(self.health)
+        # if self.health < 3:
+        #     self.mob_skin = self.game.mob_3_img
+        #     print("hi")
+        # if self.health < 3:
+        #     self.game.mob_image = 'mob_full_health.png'
         self.rect.x += self.speed
         # self.rect.y += self.speed
         #if the x value is greater or less than either side of the screen
