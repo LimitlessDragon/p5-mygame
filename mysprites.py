@@ -104,11 +104,11 @@ class Player(Sprite):
                 print("now time to wait")
             if str(hits[0].__class__.__name__) == "Mob":
                 self.invulnerable.event_time = floor(pg.time.get_ticks()/1000)
+                hits[0].image = self.game.mob_img
                 if self.invulnerable.delta > .01:
                     self.health -= 1
                 if self.vel.y > 0:
                     print("collided with mob")
-                    # hits[0].kill()
                 else:
                     print("ouch I was hurt!!!")
     def update(self):

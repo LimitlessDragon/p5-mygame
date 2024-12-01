@@ -55,6 +55,7 @@ def draw_stat_bar(surf, x, y, w, h, pct, fill_color, outline_color):
     outline_rect = pg.Rect(x, y, BAR_LENGTH, BAR_HEIGHT)
     fill_rect = pg.Rect(x, y, fill, BAR_HEIGHT)
     pg.draw.rect(surf, Black, outline_rect)
+    print(pct)
     pg.draw.rect(surf, fill_color, fill_rect)
     pg.draw.rect(surf, outline_color, outline_rect, 2)
 # create a game class that carries all the properties of the game and methods
@@ -73,7 +74,7 @@ class Game:
     self.player_img = pg.image.load(path.join(self.img_folder, 'peach1.png'))
     self.speed_img = pg.image.load(path.join(self.img_folder, 'image.png'))
     self.mob_image = 'mob.png'
-    self.mob_img = pg.image.load(path.join(self.img_folder, self.mob_image))
+    self.mob_img = pg.image.load(path.join(self.img_folder, 'mob.png'))
     # self.mob_3_img = pg.image.load(path.join(self.img_folder, 'mob_full_health.png'))
     # Player.get_keys(self)
     
@@ -98,7 +99,7 @@ class Game:
             Wall(self, col*TILESIZE, row*TILESIZE)
           if tile == 'M':
             #draws a Mob where M is there
-            self.mob = Mob(self,col*TILESIZE, row*TILESIZE)
+            Mob(self,col*TILESIZE, row*TILESIZE)
           if tile == 'P':
             #draws a Player where P is there
             self.player=Player(self,col, row)
@@ -144,7 +145,7 @@ class Game:
             Wall(self, col*TILESIZE, row*TILESIZE)
           if tile == 'M':
             #draws a Mob where M is there
-            self.mob = Mob(self,col*TILESIZE, row*TILESIZE)
+            Mob(self,col*TILESIZE, row*TILESIZE)
           if tile == 'P':
             #draws a Player where P is there
             self.player=Player(self,col, row)
@@ -193,9 +194,6 @@ class Game:
           self.playing = False
   # Makes sure the sprites are constantly being update on the screen with their values/data
   def update(self):
-    if self.mob.health <= 2:
-      self.mob_image = 'mob_full_health.png'
-      self.mob_img = pg.image.load(path.join(self.img_folder, self.mob_image))
     self.next_level_first(self)
     self.game_timer.ticking()
     # update all the sprites...and I MEAN ALL OF THEM
@@ -241,7 +239,7 @@ class Game:
             Wall(self, col*TILESIZE, row*TILESIZE)
           if tile == 'M':
             #draws a Mob where M is there
-            self.mob = Mob(self,col*TILESIZE, row*TILESIZE)
+            Mob(self,col*TILESIZE, row*TILESIZE)
           if tile == 'P':
             #draws a Player where P is there
             self.player=Player(self,col, row)
@@ -269,7 +267,8 @@ class Game:
     self.draw_text(self.screen, str(self.dt*1000), 18, White, WIDTH/30, HEIGHT/30)
     self.draw_text(self.screen, str(self.player.coins), 18, White, WIDTH-10, HEIGHT/30)
     self.draw_text(self.screen, str(self.player.health), 18, White, WIDTH-5, HEIGHT/25)
-    draw_stat_bar(self.screen, 5, 5, 50, 10, self.player.health, Red, White)
+    draw_stat_bar(self.screen, self.player.rect.x, self.player.rect.y-TILESIZE, TILESIZE, 25, 100/3*self.player.health, Green, White)
+    # draw_stat_bar(self.screen, self.mob.rect.x, self.mob.rect.y-TILESIZE, TILESIZE, 25, self.mob.health, Red, White)
     pg.display.flip()
 
 if __name__ == "__main__":
