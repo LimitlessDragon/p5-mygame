@@ -45,6 +45,7 @@ class Player(Sprite):
             self.jump()
         if pg.mouse.get_pressed()[0]:
             self.shoot()
+    # The projectile sprite is created and shot at speeds. The directions are determined by mouse_pos and to shoot is derived from mouse_get_pressed in get_keys.
     def shoot(self):
         self.cd.event_time = floor(pg.time.get_ticks() / 1000)
         if self.cd.delta > 0.01:
@@ -101,6 +102,8 @@ class Player(Sprite):
             if str(hits[0].__class__.__name__) == "Jump":
                 print("Jump Boost!")
                 self.jump_power+=2
+            if str(hits[0].__class__.__name__) == "Heart":
+                self.health += 1
                 print("now time to wait")
             if str(hits[0].__class__.__name__) == "Mob":
                 self.invulnerable.event_time = floor(pg.time.get_ticks()/1000)
@@ -216,9 +219,9 @@ class Projectile(Sprite):
     def __init__(self, game, x, y):
         self.groups = game.all_sprites , game.all_projectiles
         Sprite.__init__(self, self.groups)
-        self.image = pg.Surface((TILESIZE/4, TILESIZE/4))
-        self.game=game
-        self.image.fill(Red)
+        self.game = game
+        self.image = self.game.bullet_img
+        self.image.set_colorkey(Black)
         self.rect = self.image.get_rect()
         self.rect.x = x
         self.rect.y = y
@@ -238,8 +241,6 @@ class Speed(Sprite):
         self.game = game
         self.image = self.game.speed_img
         self.image.set_colorkey(Black)
-        self.rect = self.image.get_rect()
-        self.game=game
         self.rect = self.image.get_rect()
         self.rect.x = x
         self.rect.y = y
@@ -262,14 +263,28 @@ class Jump(Sprite):
         self.y = y
     def update(self):
         pass
+class Heart(Sprite):
+    def __init__(self, game, x, y):
+        self.groups = game.all_sprites , game.all_powerups
+        Sprite.__init__(self, self.groups)
+        self.game = game
+        self.image = self.game.heart_img
+        self.image.set_colorkey(Black)
+        self.rect = self.image.get_rect()
+        self.rect.x = x
+        self.rect.y = y
+        self.x = x
+        self.y = y
+    def update(self):
+        pass
 # this is the Coin Class
 class Coin(Sprite):
     def __init__(self, game, x, y):
         self.groups = game.all_sprites , game.all_coins
         Sprite.__init__(self, self.groups)
-        self.image = pg.Surface((TILESIZE, TILESIZE))
-        self.game=game
-        self.image.fill(Yellow)
+        self.game = game
+        self.image = self.game.coin_img
+        self.image.set_colorkey(Black)
         self.rect = self.image.get_rect()
         self.rect.x = x
         self.rect.y = y

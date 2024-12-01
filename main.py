@@ -24,13 +24,17 @@ Sprite Images
 
 I got an idea for my mob from this link:
 https://www.vecteezy.com/vector-art/14762634-cute-red-monster-vector
+
+Coin Image from Mario (Nintendo)
+Heart Image from Sans- Undertale
+Bullet from pixelart.com
 '''
 '''
 Goals:
 To finish all the different levels by collecting all the coins in each level without getting hit my mobs.
 Powerups will be provided differently in each level to make the game harder or easier.
 Rules: You can't touch mobs; you can't reuse powerups;
-Feedback: Colliding with mobs bounces them back, while colliding with coins earns you a point and gets you to the next level.
+Feedback: Colliding with mobs hurts you, while colliding with coins earns you a point and gets you to the next level.
 Powerups will disappear when collided with and give different effects depending on the type
 Freedom: Sideways Movement; Powerups;Debufs; vertical movement with regard to gravity
 
@@ -38,9 +42,8 @@ Player 1 collides with powerup which gives it a speed boost.
 
 
 New ideas to add/do:
-Add comments
-NEW LEVELS
-Moving Platforms
+NEW LEVELS - (1/2 levels added)
+Moving Platforms- Done
 Portals
 Timer for Powerup
 create a reset button(r)-fix the load_data error when I tried to do it
@@ -55,7 +58,6 @@ def draw_stat_bar(surf, x, y, w, h, pct, fill_color, outline_color):
     outline_rect = pg.Rect(x, y, BAR_LENGTH, BAR_HEIGHT)
     fill_rect = pg.Rect(x, y, fill, BAR_HEIGHT)
     pg.draw.rect(surf, Black, outline_rect)
-    print(pct)
     pg.draw.rect(surf, fill_color, fill_rect)
     pg.draw.rect(surf, outline_color, outline_rect, 2)
 # create a game class that carries all the properties of the game and methods
@@ -66,7 +68,7 @@ class Game:
     self.screen = pg.display.set_mode((WIDTH, HEIGHT))
     pg.display.set_caption("Umar's Coolest Game Ever...")
     self.playing = True
-  # this is where the game creates the stuff you see and hear
+  # the load_data is used to get data files(png and txt) for level info or sprite images
   def load_data(self):
     self.game_folder = path.dirname(__file__)
     self.map = Map(path.join(self.game_folder, 'lvl1.txt'))
@@ -75,13 +77,24 @@ class Game:
     self.speed_img = pg.image.load(path.join(self.img_folder, 'image.png'))
     self.mob_image = 'mob.png'
     self.mob_img = pg.image.load(path.join(self.img_folder, 'mob.png'))
-    # self.mob_3_img = pg.image.load(path.join(self.img_folder, 'mob_full_health.png'))
-    # Player.get_keys(self)
+    self.coin_img = pg.image.load(path.join(self.img_folder, 'coin.png'))
+    self.heart_img = pg.image.load(path.join(self.img_folder, 'heart.png'))
+    self.bullet_img = pg.image.load(path.join(self.img_folder, 'bullet.png'))
+    '''
+    self.mob_3_img = pg.image.load(path.join(self.img_folder, 'mob_full_health.png'))
+    Player.get_keys(self)
     
-  # def reset_Player(self):
-    # if self.player.keys[pg.K_r]:
-    #   Game.reset_Player(self)
-    # Game.new(self)
+  def reset_Player(self):
+    if self.player.keys[pg.K_r]:
+      Game.reset_Player(self)
+    Game.new(self)
+  
+    '''
+    '''
+  To load each level:
+  1: Select a txt map from data
+  2: Restart the Timers and cooldowns
+  '''
   def load_level(self, level):
     self.loading= True
     self.map = Map(path.join(self.game_folder, level))
@@ -89,34 +102,9 @@ class Game:
     self.game_timer = Timer(self)
     # # set countdown amount
     self.game_timer.cd = 60
-  # enumerates the .txt files, so it can be read as columns and rows
-  # It scans the columns and rows for specfic letters such as M to place a Mob. Each letter is a different Tile of 32 pixels.
-    def drawing_sprites(self):
-      for row, tiles in enumerate(self.map.data):
-        for col, tile in enumerate(tiles):
-          if tile == '1':
-            #if 1 is in the text file, then draw a wall
-            Wall(self, col*TILESIZE, row*TILESIZE)
-          if tile == 'M':
-            #draws a Mob where M is there
-            Mob(self,col*TILESIZE, row*TILESIZE)
-          if tile == 'P':
-            #draws a Player where P is there
-            self.player=Player(self,col, row)
-          if tile == 'U':
-            #draws a Powerup where U is there
-            Speed(self,col*TILESIZE, row*TILESIZE)
-          if tile == 'J':
-            #draws a Powerup where U is there
-            Jump(self,col*TILESIZE, row*TILESIZE)
-          if tile == 'C':
-            #draws a Coin where C is there
-            Coin(self,col*TILESIZE, row*TILESIZE)
-          if tile == 'A':
-            #draws a moving wall
-            Moving_wall(self, col*TILESIZE, row*TILESIZE)
-    self.drawing_sprites()
 
+
+  # This occurs when you first start up the game: Basically it resets everything to starting stats and initializes the groups and sprites in their positions
   def new(self):
     self.load_data()
     coins_per_level=0
@@ -134,8 +122,8 @@ class Game:
     self.all_coins = pg.sprite.Group()
     self.all_projectiles= pg.sprite.Group()
 
-    # self.wall = Wall(self, WIDTH//2,HEIGHT//2)
-    # #added sprites(player, mob, etc...) to the all_sprites group already in sprites in sprites
+    # enumerates the .txt files, so it can be read as columns and rows
+    # It scans the columns and rows for specfic letters such as M to place a Mob. Each letter is a different Tile of 32 pixels.
     #for loop to add more walls/sprites from the group all_sprites
     #we are going to read the text file into pixels
     for row, tiles in enumerate(self.map.data):
@@ -161,6 +149,9 @@ class Game:
           if tile == 'A':
             #draws a moving wall
             Moving_wall(self, col*TILESIZE, row*TILESIZE)
+          if tile == 'H':
+            #draws a Powerup where U is there
+            Heart(self,col*TILESIZE, row*TILESIZE)
     #drawing_sprites(self)
 
   '''
@@ -255,8 +246,10 @@ class Game:
           if tile == 'A':
             #draws a moving wall
             Moving_wall(self, col*TILESIZE, row*TILESIZE)
+          if tile == 'H':
+            #draws a Powerup where U is there
+            Heart(self,col*TILESIZE, row*TILESIZE)
 
-    #self.drawing_sprites()
   # output
   def draw(self):
     self.screen.fill((0, 0, 0))
