@@ -206,14 +206,15 @@ class Game:
   '''
   #Change the value for the if statement to a variable amount that changes for each level
   def next_level_first(self,level):
-    print(self.coins_per_level)
     if self.level == 'lvl1.txt':
-      print("ok")
       self.coins_per_level = 1
       self.next_level = 'lvl3.txt'
     if self.level == 'lvl3.txt':
       self.coins_per_level = 3
       self.next_level = 'lvl4.txt'
+    if self.level == 'lvl4.txt':
+      self.coins_per_level = 3
+      self.next_level = None
     if self.player.coins == self.coins_per_level:
       #next stage
       self.next_stage(self.next_level)
