@@ -1,5 +1,5 @@
 #This file was created by: Umar Khan
-player_speed=1.75
+player_speed=3
 #imports all the libraries for the game and data from 'settings'
 from typing import Any
 import pygame as pg
@@ -27,7 +27,7 @@ class Player(Sprite):
         self.speed = 5
         self.coins = 0
         self.mouse_pos = (0,0)
-        self.health = 3
+        self.health = 5
         self.invulnerable = Cooldown()
         self.mobs_can_attack= True
         self.cd = Cooldown()
@@ -119,6 +119,8 @@ class Player(Sprite):
         self.invulnerable.ticking()
         if self.health == 0:
             self.game.next_stage("lvl2.txt")
+            self.game.new()
+            self.health = 5
         self.pos += self.vel + 0.5 * self.acc
         self.acc = vec(0, GRAVITY)
         self.get_keys()

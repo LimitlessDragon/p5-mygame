@@ -68,6 +68,9 @@ class Game:
     self.screen = pg.display.set_mode((WIDTH, HEIGHT))
     pg.display.set_caption("Umar's Coolest Game Ever...")
     self.playing = True
+    self.coins_per_level = 18
+    self.next_level = 'loading.txt'
+    self.level = 'lvl1.txt'
   # the load_data is used to get data files(png and txt) for level info or sprite images
   def load_data(self):
     self.game_folder = path.dirname(__file__)
@@ -121,7 +124,6 @@ class Game:
     self.all_powerups = pg.sprite.Group()
     self.all_coins = pg.sprite.Group()
     self.all_projectiles= pg.sprite.Group()
-
     # enumerates the .txt files, so it can be read as columns and rows
     # It scans the columns and rows for specfic letters such as M to place a Mob. Each letter is a different Tile of 32 pixels.
     #for loop to add more walls/sprites from the group all_sprites
@@ -204,13 +206,20 @@ class Game:
   '''
   #Change the value for the if statement to a variable amount that changes for each level
   def next_level_first(self,level):
-    # if level == 'lvl1.txt':
-    #   coins_per_level=6
-    if self.player.coins == 6:
+    print(self.coins_per_level)
+    if self.level == 'lvl1.txt':
+      print("ok")
+      self.coins_per_level = 1
+      self.next_level = 'lvl3.txt'
+    if self.level == 'lvl3.txt':
+      self.coins_per_level = 3
+      self.next_level = 'lvl4.txt'
+    if self.player.coins == self.coins_per_level:
       #next stage
-      self.next_stage("lvl3.txt")
+      self.next_stage(self.next_level)
+      self.level = self.next_level
+      
       #when player is recalled it resets the coins, so we put it back
-      self.player.coins = 7
       #change other stuff     
   '''
   next_stage mechanism: First kills all the mobs to clear memory.
@@ -258,9 +267,9 @@ class Game:
     # self.draw_text(self.screen, "asdfdafddjfjdfjjdsfasdf", 24, White, WIDTH / 2, HEIGHT / 2)
     # Displays FPS and Coins
     self.draw_text(self.screen, str(self.dt*1000), 18, White, WIDTH/30, HEIGHT/30)
-    self.draw_text(self.screen, str(self.player.coins), 18, White, WIDTH-10, HEIGHT/30)
-    self.draw_text(self.screen, str(self.player.health), 18, White, WIDTH-5, HEIGHT/25)
-    draw_stat_bar(self.screen, self.player.rect.x, self.player.rect.y-TILESIZE, TILESIZE, 25, 100/3*self.player.health, Green, White)
+    self.draw_text(self.screen, ("Coins: "+str(self.player.coins)), 18, Yellow, self.player.rect.x - TILESIZE, self.player.rect.y - TILESIZE)
+    # self.draw_text(self.screen, str(self.player.health), 18, White, WIDTH-5, HEIGHT/25)
+    draw_stat_bar(self.screen, self.player.rect.x, self.player.rect.y-TILESIZE, TILESIZE, 25, 20*self.player.health, Green, White)
     # draw_stat_bar(self.screen, self.mob.rect.x, self.mob.rect.y-TILESIZE, TILESIZE, 25, self.mob.health, Red, White)
     pg.display.flip()
 
