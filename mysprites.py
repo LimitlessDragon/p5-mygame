@@ -117,9 +117,9 @@ class Player(Sprite):
     def update(self):
         self.cd.ticking()
         self.invulnerable.ticking()
+        print(self.game.level)
         if self.health == 0:
-            self.game.next_stage("lvl2.txt")
-            self.game.new()
+            self.game.next_stage(self.game.level)
             self.health = 5
         self.pos += self.vel + 0.5 * self.acc
         self.acc = vec(0, GRAVITY)

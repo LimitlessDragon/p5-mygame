@@ -12,6 +12,7 @@ from typing import *
 '''
 Sources:
 Health bar from Chris Cozort
+Original Classes(Player,Game, and Functioning Movement) from Chris Cozort
 
 https://www.pygame.org/docs/ref/mouse.html - used to see if mouse is clicked
 
@@ -207,13 +208,13 @@ class Game:
   #Change the value for the if statement to a variable amount that changes for each level
   def next_level_first(self,level):
     if self.level == 'lvl1.txt':
-      self.coins_per_level = 1
+      self.coins_per_level = 6
       self.next_level = 'lvl3.txt'
     if self.level == 'lvl3.txt':
       self.coins_per_level = 3
       self.next_level = 'lvl4.txt'
     if self.level == 'lvl4.txt':
-      self.coins_per_level = 3
+      self.coins_per_level = 2
       self.next_level = None
     if self.player.coins == self.coins_per_level:
       #next stage
