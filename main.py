@@ -65,6 +65,7 @@ def draw_stat_bar(surf, x, y, w, h, pct, fill_color, outline_color):
 class Game:
   def __init__(self):
     pg.init()
+    self.bonus_achieved = False
     self.clock = pg.time.Clock()
     self.screen = pg.display.set_mode((WIDTH, HEIGHT))
     pg.display.set_caption("Umar's Coolest Game Ever...")
@@ -155,6 +156,8 @@ class Game:
           if tile == 'H':
             #draws a Powerup where U is there
             Heart(self,col*TILESIZE, row*TILESIZE)
+          if tile == 'p':
+            Portal(self,col*TILESIZE, row*TILESIZE)
     #drawing_sprites(self)
 
   '''
@@ -260,6 +263,8 @@ class Game:
           if tile == 'H':
             #draws a Powerup where U is there
             Heart(self,col*TILESIZE, row*TILESIZE)
+          if tile == 'p':
+            Portal(self,col*TILESIZE, row*TILESIZE)
 
   # output
   def draw(self):

@@ -54,7 +54,7 @@ class Player(Sprite):
             self.mouse_pos = pg.mouse.get_pos()
             p=Projectile(self.game, self.rect.x, self.rect.y)
             self.mouse_pos = pg.mouse.get_pos()
-            if self.mouse_pos[0] < self.pos.x:
+            if self.mouse_pos[0] < self.pos.x: 
                 p.speed *= -1
     def jump(self):
         self.rect.y += 2
@@ -104,7 +104,13 @@ class Player(Sprite):
                 self.jump_power+=2
             if str(hits[0].__class__.__name__) == "Heart":
                 self.health += 1
-                print("now time to wait")
+            if str(hits[0].__class__.__name__) == "Portal":
+                if self.game.bonus_achieved == False:
+                    self.game.next_stage('bonus.txt')
+                    # self.game.bonus_achieved = True
+                    # Fix this
+                if self.game.bonus_achieved == True:
+                    self.game.next_stage(self.game.level)            
             if str(hits[0].__class__.__name__) == "Mob":
                 self.invulnerable.event_time = floor(pg.time.get_ticks()/1000)
                 hits[0].image = self.game.mob_img
@@ -117,7 +123,6 @@ class Player(Sprite):
     def update(self):
         self.cd.ticking()
         self.invulnerable.ticking()
-        print(self.game.level)
         if self.health == 0:
             self.game.next_stage(self.game.level)
             self.health = 5
@@ -159,7 +164,7 @@ class Mob(Sprite):
         self.health = 3
         # Each Mob is the size of 32 by 32 pixels or 1 TILESIZE ( in settings)
         #the speed of the Mob is set to 30
-        self.speed = 25
+        self.speed = random.randint(10,35)
         #create if statement to make the Mobs bounce back when they hit the wall
     # this method updates the Mob sprite so that it is always checking whether it is touching the side of the
     # screen, so it can go backwards using an if statement.
@@ -237,6 +242,21 @@ class Projectile(Sprite):
         
 # This is the Speed Class that is part of the class all_powerups which has a shared interaction between it and the Player
 class Speed(Sprite):
+    def __init__(self, game, x, y):
+        self.groups = game.all_sprites , game.all_powerups
+        Sprite.__init__(self, self.groups)
+        self.game = game
+        self.image = self.game.speed_img
+        self.image.set_colorkey(Black)
+        self.rect = self.image.get_rect()
+        self.rect.x = x
+        self.rect.y = y
+        self.x = x
+        self.y = y
+    def update(self):
+        pass
+
+class Portal(Sprite):
     def __init__(self, game, x, y):
         self.groups = game.all_sprites , game.all_powerups
         Sprite.__init__(self, self.groups)
