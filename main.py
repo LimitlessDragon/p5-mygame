@@ -84,7 +84,8 @@ class Game:
     self.mob_img = pg.image.load(path.join(self.img_folder, 'mob.png'))
     self.coin_img = pg.image.load(path.join(self.img_folder, 'coin.png'))
     self.heart_img = pg.image.load(path.join(self.img_folder, 'heart.png'))
-    self.bullet_img = pg.image.load(path.join(self.img_folder, 'bullet.png'))
+    self.bullet_img = pg.image.load(path.join(self.img_folder, 'upbullet.png'))
+    self.portal_img = pg.image.load(path.join(self.img_folder, 'portal.png'))
     '''
     self.mob_3_img = pg.image.load(path.join(self.img_folder, 'mob_full_health.png'))
     Player.get_keys(self)
@@ -126,6 +127,7 @@ class Game:
     self.all_powerups = pg.sprite.Group()
     self.all_coins = pg.sprite.Group()
     self.all_projectiles= pg.sprite.Group()
+    self.all_portals= pg.sprite.Group()
     # enumerates the .txt files, so it can be read as columns and rows
     # It scans the columns and rows for specfic letters such as M to place a Mob. Each letter is a different Tile of 32 pixels.
     #for loop to add more walls/sprites from the group all_sprites
@@ -219,7 +221,11 @@ class Game:
     if self.level == 'lvl4.txt':
       self.coins_per_level = 2
       self.next_level = None
-    if self.player.coins == self.coins_per_level:
+    
+    if self.bonus_achieved == True:
+      self.coins_per_level = 8
+      self.next_level = self.level
+    if self.player.coins == self.coins_per_level and self.bonus_achieved != True:
       #next stage
       self.next_stage(self.next_level)
       self.level = self.next_level

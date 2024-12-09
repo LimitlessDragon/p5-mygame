@@ -34,6 +34,7 @@ class Player(Sprite):
         self.jump_power = 18
         self.jumping = False
         self.speed = player_speed
+        self.collisions_with_portal = 0
     #uses the typing library to collect input data from keyboard and make decisions based on it
     def get_keys(self):
         keys = pg.key.get_pressed()
@@ -43,7 +44,9 @@ class Player(Sprite):
             self.vel.x += self.speed
         if keys[pg.K_SPACE]:
             self.jump()
-        if pg.mouse.get_pressed()[0]:
+        # if pg.mouse.get_pressed()[0]:
+        #     self.shoot()
+        if keys[pg.K_r]:
             self.shoot()
     # The projectile sprite is created and shot at speeds. The directions are determined by mouse_pos and to shoot is derived from mouse_get_pressed in get_keys.
     def shoot(self):
@@ -54,7 +57,7 @@ class Player(Sprite):
             self.mouse_pos = pg.mouse.get_pos()
             p=Projectile(self.game, self.rect.x, self.rect.y)
             self.mouse_pos = pg.mouse.get_pos()
-            if self.mouse_pos[0] < self.pos.x: 
+            if self.mouse_pos[0] < self.pos.y: 
                 p.speed *= -1
     def jump(self):
         self.rect.y += 2
@@ -104,13 +107,6 @@ class Player(Sprite):
                 self.jump_power+=2
             if str(hits[0].__class__.__name__) == "Heart":
                 self.health += 1
-            if str(hits[0].__class__.__name__) == "Portal":
-                if self.game.bonus_achieved == False:
-                    self.game.next_stage('bonus.txt')
-                    # self.game.bonus_achieved = True
-                    # Fix this
-                if self.game.bonus_achieved == True:
-                    self.game.next_stage(self.game.level)            
             if str(hits[0].__class__.__name__) == "Mob":
                 self.invulnerable.event_time = floor(pg.time.get_ticks()/1000)
                 hits[0].image = self.game.mob_img
@@ -120,6 +116,16 @@ class Player(Sprite):
                     print("collided with mob")
                 else:
                     print("ouch I was hurt!!!")
+            if str(hits[0].__class__.__name__) == "Portal" and self.collisions_with_portal == 0 and self.game.bonus_achieved != 0:
+                if self.game.bonus_achieved == False and self.collisions_with_portal == 0:
+                    self.collisions_with_portal = 1
+                    self.game.next_stage('bonus.txt')
+                    self.game.bonus_achieved = True
+                # if self.coins == self.game.coins_per_level and self.game.bonus_achieved == True:
+                #         self.collisions_with_portal = 2
+                if self.coins == self.game.coins_per_level and self.game.bonus_achieved == True:
+                    self.game.next_stage(self.game.level)  
+                    self.game.bonus_achieved = 0
     def update(self):
         self.cd.ticking()
         self.invulnerable.ticking()
@@ -141,7 +147,7 @@ class Player(Sprite):
         self.collide_with_stuff(self.game.all_powerups, True)
         self.collide_with_stuff(self.game.all_coins, True)
         self.collide_with_stuff(self.game.all_mobs, False)
-        # self.collide_with_mobs(self.game.all_mobs, True)
+        self.collide_with_stuff(self.game.all_portals, False)
 # added Mob - moving objects
 #is a child class of Sprite
 # The Mob is in the group of all_mobs in which above the interactions between Mobs and Players can be created
@@ -236,8 +242,8 @@ class Projectile(Sprite):
         self.y = y * TILESIZE
         self.speed = 25
     def update(self):
-        self.rect.x += self.speed
-        if self.rect.x < 0:
+        self.rect.y += self.speed
+        if self.rect.y < 0:
             self.kill()
         
 # This is the Speed Class that is part of the class all_powerups which has a shared interaction between it and the Player
@@ -258,10 +264,10 @@ class Speed(Sprite):
 
 class Portal(Sprite):
     def __init__(self, game, x, y):
-        self.groups = game.all_sprites , game.all_powerups
+        self.groups = game.all_sprites , game.all_portals
         Sprite.__init__(self, self.groups)
         self.game = game
-        self.image = self.game.speed_img
+        self.image = self.game.portal_img
         self.image.set_colorkey(Black)
         self.rect = self.image.get_rect()
         self.rect.x = x
