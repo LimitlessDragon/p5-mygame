@@ -34,7 +34,6 @@ class Player(Sprite):
         self.jump_power = 18
         self.jumping = False
         self.speed = player_speed
-        self.collisions_with_portal = 0
     #uses the typing library to collect input data from keyboard and make decisions based on it
     def get_keys(self):
         keys = pg.key.get_pressed()
@@ -116,17 +115,17 @@ class Player(Sprite):
                     print("collided with mob")
                 else:
                     print("ouch I was hurt!!!")
-            if str(hits[0].__class__.__name__) == "Portal" and self.collisions_with_portal == 0 and self.game.bonus_achieved != 0:
-                if self.game.bonus_achieved == False and self.collisions_with_portal == 0:
-                    self.collisions_with_portal = 1
-                    self.game.next_stage('bonus.txt')
-                    self.game.bonus_achieved = True
-                # if self.coins == self.game.coins_per_level and self.game.bonus_achieved == True:
-                #         self.collisions_with_portal = 2
-                if self.coins == self.game.coins_per_level and self.game.bonus_achieved == True:
-                    self.game.next_stage(self.game.level)  
-                    self.game.bonus_achieved = 0
+            if str(hits[0].__class__.__name__) == "Portal" and self.game.collisions_with_portal == 0 and self.game.bonus_achieved == False:
+                self.game.collisions_with_portal = 1
+                self.game.next_stage('bonus.txt')
+                self.game.bonus_achieved = True
+            if self.coins == self.game.coins_per_level:
+                self.game.collisions_with_portal = 2
+            if str(hits[0].__class__.__name__) == "Portal" and self.game.collisions_with_portal == 2 and self.game.bonus_achieved == True and self.coins == self.game.coins_per_level:
+                self.game.next_stage(self.game.level)  
+                self.game.bonus_achieved = 0
     def update(self):
+        print(self.game.collisions_with_portal)
         self.cd.ticking()
         self.invulnerable.ticking()
         if self.health == 0:

@@ -66,6 +66,7 @@ class Game:
   def __init__(self):
     pg.init()
     self.bonus_achieved = False
+    self.collisions_with_portal = 0
     self.clock = pg.time.Clock()
     self.screen = pg.display.set_mode((WIDTH, HEIGHT))
     pg.display.set_caption("Umar's Coolest Game Ever...")
@@ -223,7 +224,7 @@ class Game:
       self.next_level = None
     
     if self.bonus_achieved == True:
-      self.coins_per_level = 8
+      self.coins_per_level = 6
       self.next_level = self.level
     if self.player.coins == self.coins_per_level and self.bonus_achieved != True:
       #next stage
