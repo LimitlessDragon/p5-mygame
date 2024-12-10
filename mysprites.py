@@ -45,8 +45,10 @@ class Player(Sprite):
             self.jump()
         # if pg.mouse.get_pressed()[0]:
         #     self.shoot()
-        if keys[pg.K_r]:
+        if keys[pg.K_q]:
             self.shoot()
+        if keys[pg.K_r]:
+            self.game.new()
     # The projectile sprite is created and shot at speeds. The directions are determined by mouse_pos and to shoot is derived from mouse_get_pressed in get_keys.
     def shoot(self):
         self.cd.event_time = floor(pg.time.get_ticks() / 1000)
@@ -272,7 +274,8 @@ class Portal(Sprite):
         self.x = x
         self.y = y
     def update(self):
-        pass
+        if self.game.collisions_with_portal == 2 and self.game.bonus == True:
+            self.kill()
 # This is the Jump Class that is part of the class all_powerups which has a shared interaction between it and the Player
 class Jump(Sprite):
     def __init__(self, game, x, y):
