@@ -51,12 +51,11 @@ class Player(Sprite):
     def shoot(self):
         self.cd.event_time = floor(pg.time.get_ticks() / 1000)
         if self.cd.delta > 0.01:
-            print(pg.mouse.get_pos())
-            print(self.pos)
             self.mouse_pos = pg.mouse.get_pos()
             p=Projectile(self.game, self.rect.x, self.rect.y)
-            self.mouse_pos = pg.mouse.get_pos()
-            if self.mouse_pos[0] < self.pos.y: 
+            print(self.mouse_pos)
+            print(self.pos.y)
+            if self.mouse_pos[1] > self.pos.y:
                 p.speed *= -1
     def jump(self):
         self.rect.y += 2
@@ -125,7 +124,6 @@ class Player(Sprite):
                 self.game.next_stage(self.game.level)  
                 self.game.bonus_achieved = 0
     def update(self):
-        print(self.game.collisions_with_portal)
         self.cd.ticking()
         self.invulnerable.ticking()
         if self.health == 0:
@@ -241,7 +239,7 @@ class Projectile(Sprite):
         self.y = y * TILESIZE
         self.speed = 25
     def update(self):
-        self.rect.y += self.speed
+        self.rect.y -= self.speed
         if self.rect.y < 0:
             self.kill()
         
