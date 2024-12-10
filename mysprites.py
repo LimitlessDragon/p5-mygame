@@ -119,7 +119,7 @@ class Player(Sprite):
                 self.game.collisions_with_portal = 1
                 self.game.next_stage('bonus.txt')
                 self.game.bonus_achieved = True
-            if self.coins == self.game.coins_per_level:
+            if self.coins == self.game.coins_per_level and self.game.bonus_achieved == True:
                 self.game.collisions_with_portal = 2
             if str(hits[0].__class__.__name__) == "Portal" and self.game.collisions_with_portal == 2 and self.game.bonus_achieved == True and self.coins == self.game.coins_per_level:
                 self.game.next_stage(self.game.level)  
