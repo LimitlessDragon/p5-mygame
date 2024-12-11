@@ -29,9 +29,10 @@ class Player(Sprite):
         self.mouse_pos = (0,0)
         self.health = 5
         self.invulnerable = Cooldown()
+        self.jump_clock = Cooldown()
         self.mobs_can_attack= True
         self.cd = Cooldown()
-        self.jump_power = 18
+        self.jump_power = 15
         self.jumping = False
         self.speed = player_speed
     #uses the typing library to collect input data from keyboard and make decisions based on it
@@ -101,7 +102,8 @@ class Player(Sprite):
                 self.speed+=5
             if str(hits[0].__class__.__name__) == "Coin":
                 print("You got a Coin!")
-                self.coins+=1
+                self.coins +=1
+                self.game.total_coins += 100
             if str(hits[0].__class__.__name__) == "Jump":
                 print("Jump Boost!")
                 self.jump_power+=2
@@ -116,6 +118,12 @@ class Player(Sprite):
                     print("collided with mob")
                 else:
                     print("ouch I was hurt!!!")
+            if str(hits[0].__class__.__name__) == "Trampoline":
+                self.jump_clock.event_time = floor(pg.time.get_ticks()/1000)
+                self.jump_power += 5
+                if self.jump_clock.delta > 1:
+                    self.jump_power -= 5
+
             if str(hits[0].__class__.__name__) == "Portal" and self.game.collisions_with_portal == 0 and self.game.bonus_achieved == False:
                 self.game.collisions_with_portal = 1
                 self.game.next_stage('bonus.txt')
@@ -128,8 +136,10 @@ class Player(Sprite):
     def update(self):
         self.cd.ticking()
         self.invulnerable.ticking()
+        self.jump_clock.ticking()
         if self.health == 0:
             self.game.next_stage(self.game.level)
+            self.game.score = 0
             self.health = 5
         self.pos += self.vel + 0.5 * self.acc
         self.acc = vec(0, GRAVITY)
@@ -217,9 +227,10 @@ class Wall(Sprite):
     def __init__(self, game, x, y):
         self.groups = game.all_sprites , game.all_walls
         Sprite.__init__(self, self.groups)
-        self.image = pg.Surface((TILESIZE, TILESIZE))
-        self.game=game
-        self.image.fill(Blue)
+        self.game = game
+        # self.image = pg.Surface((TILESIZE, TILESIZE))
+        self.image = self.game.wall_img
+        self.image.set_colorkey(Black)
         self.rect = self.image.get_rect()
         self.rect.x = x
         self.rect.y = y
@@ -274,7 +285,7 @@ class Portal(Sprite):
         self.x = x
         self.y = y
     def update(self):
-        if self.game.collisions_with_portal == 2 and self.game.bonus == True:
+        if self.game.collisions_with_portal == 2 and self.game.bonus_achieved == 0:
             self.kill()
 # This is the Jump Class that is part of the class all_powerups which has a shared interaction between it and the Player
 class Jump(Sprite):
@@ -324,15 +335,16 @@ class Moving_wall(Sprite):
     def __init__(self, game, x, y):
         self.groups = game.all_sprites , game.all_walls
         Sprite.__init__(self, self.groups)
-        self.image = pg.Surface((5*TILESIZE, TILESIZE))
-        self.game=game
-        self.image.fill(Blue)
+        self.game = game
+        # self.image = pg.Surface((5*TILESIZE, TILESIZE))
+        # self.image = pg.Surface((TILESIZE, TILESIZE))
+        self.image = self.game.moving_wall_img
+        self.image.set_colorkey(Black)
         self.rect = self.image.get_rect()
-        self.game=game
         self.rect.x = x
         self.rect.y = y
         # Each Block is the size of 32 by 32 pixels or 1 TILESIZE ( in settings)
-        self.x = x * TILESIZE
+        self.x = x * 5*TILESIZE
         self.y = y * TILESIZE
         self.speed = 5
         #create if statement to make the Platforms bounce back when they hit the wall
@@ -344,3 +356,18 @@ class Moving_wall(Sprite):
         #if the x value is greater or less than either side of the screen
         if self.rect.x > WIDTH - TILESIZE or self.rect.x < 0:
             self.speed *= -1
+class Trampoline(Sprite):
+    def __init__(self, game, x, y):
+        self.groups = game.all_sprites , game.all_powerups
+        Sprite.__init__(self, self.groups)
+        self.game = game
+        # self.image = pg.Surface((TILESIZE, TILESIZE))
+        self.image = self.game.trampoline_img
+        self.image.set_colorkey(Black)
+        self.rect = self.image.get_rect()
+        self.rect.x = x
+        self.rect.y = y
+        self.x = x * TILESIZE
+        self.y = y * TILESIZE
+    def update(self):
+        pass

@@ -11,10 +11,17 @@ from utilities import *
 from typing import *
 '''
 Sources:
-Health bar from Chris Cozort
+Stat/Health bar from Chris Cozort
 Original Classes(Player,Game, and Functioning Movement) from Chris Cozort
 
 https://www.pygame.org/docs/ref/mouse.html - used to see if mouse is clicked
+
+
+Trampoline Image
+https://www.pixilart.com/art/trampoline-sprite-for-gam-c1144d241cff7e5
+
+Brick Wall image
+https://es.pinterest.com/pin/550776229426196197/
 
 Code for putting Images: from Mr. Cozort
 Scratch.mit.edu and google.com for sprite images/ inspirations for Sprites
@@ -73,7 +80,9 @@ class Game:
     self.playing = True
     self.coins_per_level = 18
     self.next_level = 'loading.txt'
-    self.level = 'lvl1.txt'
+    self.level = 'lvl.txt'
+    self.total_coins = 0
+    self.score = 0
   # the load_data is used to get data files(png and txt) for level info or sprite images
   def load_data(self):
     self.game_folder = path.dirname(__file__)
@@ -87,6 +96,9 @@ class Game:
     self.heart_img = pg.image.load(path.join(self.img_folder, 'heart.png'))
     self.bullet_img = pg.image.load(path.join(self.img_folder, 'upbullet.png'))
     self.portal_img = pg.image.load(path.join(self.img_folder, 'portal.png'))
+    self.wall_img = pg.image.load(path.join(self.img_folder, 'wall.png'))
+    self.moving_wall_img = pg.image.load(path.join(self.img_folder, 'moving.png'))
+    self.trampoline_img = pg.image.load(path.join(self.img_folder, 'trampoline2.png'))
     '''
     self.mob_3_img = pg.image.load(path.join(self.img_folder, 'mob_full_health.png'))
     Player.get_keys(self)
@@ -109,7 +121,6 @@ class Game:
     self.game_timer = Timer(self)
     # # set countdown amount
     self.game_timer.cd = 60
-
 
   # This occurs when you first start up the game: Basically it resets everything to starting stats and initializes the groups and sprites in their positions
   def new(self):
@@ -149,7 +160,7 @@ class Game:
             Speed(self,col*TILESIZE, row*TILESIZE)
           if tile == 'J':
             #draws a Powerup where U is there
-            Jump(self,col*TILESIZE, row*TILESIZE)
+            Trampoline(self,col*TILESIZE, row*TILESIZE)
           if tile == 'C':
             #draws a Coin where C is there
             Coin(self,col*TILESIZE, row*TILESIZE)
@@ -213,20 +224,21 @@ class Game:
   '''
   #Change the value for the if statement to a variable amount that changes for each level
   def next_level_first(self,level):
-    if self.level == 'lvl1.txt':
+    if self.level == 'lvl.txt':
       self.coins_per_level = 6
       self.next_level = 'lvl3.txt'
     if self.level == 'lvl3.txt':
       self.coins_per_level = 3
-      self.next_level = 'lvl4.txt'
+      self.next_level = 'lvl3.txt'
     if self.level == 'lvl4.txt':
       self.coins_per_level = 2
-      self.next_level = None
+      self.next_level = 'loading.txt'
     
     if self.bonus_achieved == True:
       self.coins_per_level = 6
       self.next_level = self.level
-    if self.player.coins == self.coins_per_level and self.bonus_achieved != True:
+    if self.player.coins == self.coins_per_level and self.bonus_achieved == False:
+      print(self.level)
       #next stage
       self.next_stage(self.next_level)
       self.level = self.next_level
@@ -240,6 +252,8 @@ class Game:
   in many cases such as: next level; game over; bonus level
   '''
   def next_stage(self, level):
+    self.score += 500
+    print("hi")
     for s in self.all_sprites:
       s.kill()
       self.mob_image = 'mob.png'
@@ -260,7 +274,7 @@ class Game:
             Speed(self,col*TILESIZE, row*TILESIZE)
           if tile == 'J':
             #draws a Powerup where U is there
-            Jump(self,col*TILESIZE, row*TILESIZE)
+            Trampoline(self,col*TILESIZE, row*TILESIZE)
           if tile == 'C':
             #draws a Coin where C is there
             Coin(self,col*TILESIZE, row*TILESIZE)
@@ -281,9 +295,19 @@ class Game:
     # self.draw_text(self.screen, "asdfdafddjfjdfjjdsfasdf", 24, White, WIDTH / 2, HEIGHT / 2)
     # Displays FPS and Coins
     self.draw_text(self.screen, str(self.dt*1000), 18, White, WIDTH/30, HEIGHT/30)
-    self.draw_text(self.screen, ("Coins: "+str(self.player.coins)), 18, Yellow, self.player.rect.x - TILESIZE, self.player.rect.y - TILESIZE)
-    # self.draw_text(self.screen, str(self.player.health), 18, White, WIDTH-5, HEIGHT/25)
-    draw_stat_bar(self.screen, self.player.rect.x, self.player.rect.y-TILESIZE, TILESIZE, 25, 20*self.player.health, Green, White)
+    # Draw health bar
+    # So, that if the end screen or home screen is there than it won't generate or leave the healthbar or the coins amount
+    if self.level != 'loading.txt':
+      draw_stat_bar(self.screen, self.player.rect.x, self.player.rect.y-TILESIZE, TILESIZE, 25, 20*self.player.health, Green, White)
+      self.draw_text(self.screen, ("Coins: "+str(self.player.coins)), 18, Yellow, self.player.rect.x - TILESIZE, self.player.rect.y - TILESIZE)
+    '''
+    This is where the end screen comes in. If the level is loading text than reload the level and display the end stuff: coins and game complete.
+    I also put total_coins into Game as the player resets every level also resetting the coins.
+    '''
+    if self.level == 'loading.txt':
+          self.next_stage('loading.txt')
+          self.draw_text(self.screen, "Game Complete!!!", 45, White, WIDTH // 2, HEIGHT // 2)
+          self.draw_text(self.screen, "Coins: "+str(self.total_coins+self.score), 36, Yellow, WIDTH // 2, HEIGHT // 1.75)
     # draw_stat_bar(self.screen, self.mob.rect.x, self.mob.rect.y-TILESIZE, TILESIZE, 25, self.mob.health, Red, White)
     pg.display.flip()
 
