@@ -242,13 +242,17 @@ class Game:
         self.coins_per_level = 3
         self.next_level = 'lvl4.txt'
       if self.level == 'lvl4.txt':
-        self.coins_per_level = 2
+        self.coins_per_level = 3
         self.next_level = 'loading.txt'
       if self.bonus_achieved == True:
         self.coins_per_level = 6
         self.next_level = self.level
+      if self.level == 'loading.txt':
+        self.coins_per_level == 994299242
       if self.player.coins == self.coins_per_level and self.bonus_achieved == False:
         #next stage
+        if self.player.coins == self.coins_per_level:
+          self.score += 500
         self.next_stage(self.next_level)
         self.level = self.next_level
       
@@ -261,8 +265,6 @@ class Game:
   in many cases such as: next level; game over; bonus level
   '''
   def next_stage(self, level):
-    self.score += 500
-    print("hi")
     for s in self.all_sprites:
       s.kill()
       self.mob_image = 'mob.png'

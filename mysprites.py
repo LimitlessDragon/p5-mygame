@@ -161,7 +161,7 @@ class Player(Sprite):
         self.jump_clock.ticking()
         if self.health == 0:
             self.game.next_stage(self.game.level)
-            self.game.score = 0
+            # self.game.score = 0
             self.health = 5
         self.pos += self.vel + 0.5 * self.acc
         self.acc = vec(0, GRAVITY)
