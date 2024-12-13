@@ -80,7 +80,7 @@ class Game:
     self.playing = True
     self.coins_per_level = 18
     self.next_level = 'loading.txt'
-    self.level = 'lvl.txt'
+    self.level = 'lvl1.txt'
     self.total_coins = 0
     self.score = 0
   # the load_data is used to get data files(png and txt) for level info or sprite images
@@ -224,8 +224,8 @@ class Game:
   '''
   #Change the value for the if statement to a variable amount that changes for each level
   def next_level_first(self,level):
-    if self.level == 'lvl.txt':
-      self.coins_per_level = 6
+    if self.level == 'lvl1.txt':
+      self.coins_per_level = 5
       self.next_level = 'lvl3.txt'
     if self.level == 'lvl3.txt':
       self.coins_per_level = 3
@@ -233,12 +233,10 @@ class Game:
     if self.level == 'lvl4.txt':
       self.coins_per_level = 2
       self.next_level = 'loading.txt'
-    
     if self.bonus_achieved == True:
       self.coins_per_level = 6
       self.next_level = self.level
     if self.player.coins == self.coins_per_level and self.bonus_achieved == False:
-      print(self.level)
       #next stage
       self.next_stage(self.next_level)
       self.level = self.next_level
