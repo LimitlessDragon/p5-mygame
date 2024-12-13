@@ -51,26 +51,32 @@ class Player(Sprite):
         if keys[pg.K_r]:
             self.game.new()
         self.mouse_pos = pg.mouse.get_pos()
+        '''
+        If the level is the startmenu and the level selected button hasn't been clicked yet than if the mouse_pos is in the range of the button
+        and the mouse is pressed: Then click the levels button which set the level selected variable to true. In game if it is true than the levels appear as text.
+        If their range is pressed than switch to those levels using self.game.level_chosen and self.game.level trough self.game.next_stage.
+        '''
         if self.game.level == 'startmenu.txt' and self.game.levels_button_clicked == False:
             if self.mouse_pos[0] < 578 and self.mouse_pos[0] > 451 and self.mouse_pos[1] < 372 and self.mouse_pos[1] > 322 and pg.mouse.get_pressed()[0]:
                 self.game.levels_button_clicked = True
+            # if self.game.level == 'startmenu.txt' and self.game.levels_button_clicked == True:
+            #     if self.mouse_pos[0] < 578 and self.mouse_pos[0] > 451 and self.mouse_pos[1] < 372 and self.mouse_pos[1] > 322 and pg.mouse.get_pressed()[0]:
+            #         self.game.levels_button_clicked = False
         if self.game.level == 'startmenu.txt' and self.game.levels_button_clicked == True:
-                if self.mouse_pos[1] < 470 and self.mouse_pos[1] > 450:
-                    if self.mouse_pos[0] < 290 and self.mouse_pos[0] > 220 and pg.mouse.get_pressed()[0]:
+                if self.mouse_pos[0] > 460 and self.mouse_pos[1] < 560:
+                    if self.mouse_pos[1] < 416 and self.mouse_pos[1] > 384 and pg.mouse.get_pressed()[0]:
                         print("1 plz")
-                        self.game.level = 'lvl1.txt'
-                        self.game.next_stage('lvl1.txt')
+                        self.game.level = self.game.chosen_level = 'lvl1.txt'
                         self.game.level_chosen = True
-                    if self.mouse_pos[0] < 420 and self.mouse_pos[0] > 350 and pg.mouse.get_pressed()[0]:
+                    if self.mouse_pos[1] < 480 and self.mouse_pos[1] > 448 and pg.mouse.get_pressed()[0]:
                         print("2 plz")
-                        self.game.level = 'lvl3.txt'
-                        self.game.next_stage('lvl3.txt')
+                        self.game.level = self.game.chosen_level = 'lvl3.txt'
                         self.game.level_chosen = True
-                    if self.mouse_pos[0] < 550 and self.mouse_pos[0] > 480 and pg.mouse.get_pressed()[0]:
+                    if self.mouse_pos[1] < 544 and self.mouse_pos[1] > 512 and pg.mouse.get_pressed()[0]:
                         print("3 plz")
-                        self.game.level = 'lvl4.txt'
-                        self.game.next_stage('lvl4.txt')
+                        self.game.level = self.game.chosen_level = 'lvl4.txt'
                         self.game.level_chosen = True
+                    self.game.next_stage(self.game.chosen_level)
 
     # The projectile sprite is created and shot at speeds. The directions are determined by mouse_pos and to shoot is derived from mouse_get_pressed in get_keys.
     def shoot(self):
@@ -131,9 +137,9 @@ class Player(Sprite):
                 self.jump_power+=2
             if str(hits[0].__class__.__name__) == "Heart":
                 self.health += 1
-            if str(hits[0].__class__.__name__) == "Mob":
+            if str(hits[0].__class__.__name__) == "Mob" or str(hits[0].__class__.__name__) == 'Boss':
                 self.invulnerable.event_time = floor(pg.time.get_ticks()/1000)
-                hits[0].image = self.game.mob_img
+                # hits[0].image = self.game.mob_img
                 if self.invulnerable.delta > .01:
                     self.health -= 1
                 if self.vel.y > 0:
@@ -161,7 +167,6 @@ class Player(Sprite):
         self.jump_clock.ticking()
         if self.health == 0:
             self.game.next_stage(self.game.level)
-            # self.game.score = 0
             self.health = 5
         self.pos += self.vel + 0.5 * self.acc
         self.acc = vec(0, GRAVITY)
@@ -393,3 +398,58 @@ class Trampoline(Sprite):
         self.y = y * TILESIZE
     def update(self):
         pass
+class Boss(Sprite):
+    def __init__(self, game, x, y):
+        self.groups = game.all_sprites, game.all_mobs
+        Sprite.__init__(self, self.groups)
+        self.game = game
+        # self.mob_skin = self.game.mob_img
+        # self.image = pg.Surface((32, 32))
+        # self.image = self.mob_skin
+        self.image = self.game.boss_img
+        self.image.set_colorkey(Black)
+        self.rect = self.image.get_rect()
+        # self.image.fill(RED)
+        self.rect.x = x
+        self.rect.y = y
+        self.x = x * TILESIZE
+        self.y = x * TILESIZE
+        self.health = 5
+        self.speed = 1
+        # Each Mob is the size of 32 by 32 pixels or 1 TILESIZE ( in settings)
+        #the speed of the Mob is set to 30
+        #create if statement to make the Mobs bounce back when they hit the wall
+    # this method updates the Mob sprite so that it is always checking whether it is touching the side of the
+    # screen, so it can go backwards using an if statement.
+    def collide_with_projectile(self,group,kill, health):
+            hits=pg.sprite.spritecollide(self,group,kill)
+            if hits:
+                if str(hits[0].__class__.__name__) == "Projectile":
+                    self.health -= 1
+                    print("oof")
+                if self.health == 0:
+                    print("wasted")
+                    self.kill()
+    # def shoot(self):
+    #     self.cd.event_time = floor(pg.time.get_ticks() / 1000)
+    #     if self.cd.delta > 0.1:
+    #         print(pg.mouse.get_pos())
+    #         print(self.pos)
+    #         self.mouse_pos = pg.mouse.get_pos()
+    #         p=Projectile(self.game, self.rect.x, self.rect.y)
+    #         self.mouse_pos = pg.mouse.get_pos()
+    #         if self.mouse_pos[0] < self.pos.x:
+    #             p.speed *= -1
+    def update(self):
+        self.speed = random.randint(1,100)
+        self.image = self.game.mob_img
+        self.image.set_colorkey(Black)
+        self.rect.y += self.speed
+        if self.rect.y > 700 or self.rect.y < 0:
+            #then reverse the speed by doing *= -1 and move the Mob down by 32
+            self.speed *= -1
+        #checks for if the y value of the Mob is greater than the height of the screen
+        # if self.rect.y > HEIGHT:
+        #     #if it is then set the y-value to 0
+        #     self.rect.y = 0            
+        self.collide_with_projectile(self.game.all_projectiles, self.health, True)

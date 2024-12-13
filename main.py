@@ -75,6 +75,7 @@ def draw_stat_bar(surf, x, y, w, h, pct, fill_color, outline_color):
 class Game:
   def __init__(self):
     pg.init()
+    self.chosen_level = None
     self.level_chosen = False
     self.bonus_achieved = False
     self.levels_button_clicked = False
@@ -102,8 +103,9 @@ class Game:
     self.bullet_img = pg.image.load(path.join(self.img_folder, 'upbullet.png'))
     self.portal_img = pg.image.load(path.join(self.img_folder, 'portal.png'))
     self.wall_img = pg.image.load(path.join(self.img_folder, 'wall.png'))
-    self.moving_wall_img = pg.image.load(path.join(self.img_folder, 'moving.png'))
+    self.moving_wall_img = pg.image.load(path.join(self.img_folder, 'moving (2).png'))
     self.trampoline_img = pg.image.load(path.join(self.img_folder, 'trampoline2.png'))
+    self.boss_img = pg.image.load(path.join(self.img_folder, 'Boss.png'))
     '''
     self.mob_3_img = pg.image.load(path.join(self.img_folder, 'mob_full_health.png'))
     Player.get_keys(self)
@@ -130,6 +132,7 @@ class Game:
   # This occurs when you first start up the game: Basically it resets everything to starting stats and initializes the groups and sprites in their positions
   def new(self):
     self.load_data()
+    self.chosen_level = 'startmenu.txt'
     coins_per_level=0
     #create game countdown
     self.game_timer= Timer(self)
@@ -182,6 +185,8 @@ class Game:
             Heart(self,col*TILESIZE, row*TILESIZE)
           if tile == 'p':
             Portal(self,col*TILESIZE, row*TILESIZE)
+          if tile == 'B':
+            Boss(self,col*TILESIZE, row*TILESIZE)
     #drawing_sprites(self)
 
   '''
@@ -251,7 +256,7 @@ class Game:
         self.coins_per_level == 994299242
       if self.player.coins == self.coins_per_level and self.bonus_achieved == False:
         #next stage
-        if self.player.coins == self.coins_per_level:
+        if self.player.coins == self.coins_per_level and self.level != 'loading.txt':
           self.score += 500
         self.next_stage(self.next_level)
         self.level = self.next_level
@@ -297,18 +302,29 @@ class Game:
             Heart(self,col*TILESIZE, row*TILESIZE)
           if tile == 'p':
             Portal(self,col*TILESIZE, row*TILESIZE)
+          if tile == 'B':
+            Boss(self,col*TILESIZE, row*TILESIZE)
 
   # output
   def draw(self):
     self.screen.fill((0, 0, 0))
     self.all_sprites.draw(self.screen)
     if self.level == 'startmenu.txt':
-      self.draw_text(self.screen, "Main Menu", 64, White, WIDTH // 2, HEIGHT - 18* TILESIZE)
-      self.draw_text(self.screen, "Levels", 50, White, WIDTH // 2, HEIGHT - 14* TILESIZE)
+      self.draw_text(self.screen, "Coin Collector", 64, Yellow, WIDTH // 2, HEIGHT - 18* TILESIZE)
+      draw_stat_bar(self.screen, WIDTH - 18.5 * TILESIZE, HEIGHT - 14 * TILESIZE, 5*TILESIZE, 2*TILESIZE, 100, Yellow, Black)
+      self.draw_text(self.screen, "Levels", 50, Black, WIDTH // 2, HEIGHT - 14* TILESIZE)
+      # self.draw_text(self.screen, "Settings", 50, White, WIDTH // 2, HEIGHT - 14* TILESIZE)
     if self.levels_button_clicked == True and self.level == 'startmenu.txt':
-      self.draw_text(self.screen, "Level 1", 24, White, WIDTH - 24*TILESIZE, HEIGHT - 10* TILESIZE)
-      self.draw_text(self.screen, "Level 2", 24, White, WIDTH - 20*TILESIZE, HEIGHT - 10* TILESIZE)
-      self.draw_text(self.screen, "Level 3", 24, White, WIDTH - 16*TILESIZE, HEIGHT - 10* TILESIZE)
+      # draw_stat_bar(self.screen, WIDTH - 26 *TILESIZE, HEIGHT - 10 * TILESIZE, 15*TILESIZE, 2*TILESIZE, 100, Yellow, Black)
+      # self.draw_text(self.screen, "Level 1", 24, Black, WIDTH - 24*TILESIZE, HEIGHT - 10* TILESIZE)
+      # self.draw_text(self.screen, "Level 2", 24, Black, WIDTH - 20*TILESIZE, HEIGHT - 10* TILESIZE)
+      # self.draw_text(self.screen, "Level 3", 24, Black, WIDTH - 16*TILESIZE, HEIGHT - 10* TILESIZE)
+      draw_stat_bar(self.screen, WIDTH - 17.5*TILESIZE, HEIGHT - 8 * TILESIZE, 3*TILESIZE, 1*TILESIZE, 100, Yellow, Black)
+      draw_stat_bar(self.screen, WIDTH - 17.5*TILESIZE, HEIGHT - 10 * TILESIZE, 3*TILESIZE, 1*TILESIZE, 100, Yellow, Black)
+      draw_stat_bar(self.screen, WIDTH - 17.5*TILESIZE, HEIGHT - 12 * TILESIZE, 3*TILESIZE, 1*TILESIZE, 100, Yellow, Black)
+      self.draw_text(self.screen, "Level 1", 24, Black, WIDTH //2, HEIGHT - 12* TILESIZE)
+      self.draw_text(self.screen, "Level 2", 24, Black, WIDTH //2, HEIGHT - 10* TILESIZE)
+      self.draw_text(self.screen, "Level 3", 24, Black, WIDTH //2, HEIGHT - 8* TILESIZE)
     # Any text
     # self.draw_text(self.screen, "asdfdafddjfjdfjjdsfasdf", 24, White, WIDTH / 2, HEIGHT / 2)
     # Displays FPS and Coins
