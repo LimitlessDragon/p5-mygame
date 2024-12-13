@@ -50,6 +50,28 @@ class Player(Sprite):
             self.shoot()
         if keys[pg.K_r]:
             self.game.new()
+        self.mouse_pos = pg.mouse.get_pos()
+        if self.game.level == 'startmenu.txt' and self.game.levels_button_clicked == False:
+            if self.mouse_pos[0] < 578 and self.mouse_pos[0] > 451 and self.mouse_pos[1] < 372 and self.mouse_pos[1] > 322 and pg.mouse.get_pressed()[0]:
+                self.game.levels_button_clicked = True
+        if self.game.level == 'startmenu.txt' and self.game.levels_button_clicked == True:
+                if self.mouse_pos[1] < 470 and self.mouse_pos[1] > 450:
+                    if self.mouse_pos[0] < 290 and self.mouse_pos[0] > 220 and pg.mouse.get_pressed()[0]:
+                        print("1 plz")
+                        self.game.level = 'lvl1.txt'
+                        self.game.next_stage('lvl1.txt')
+                        self.game.level_chosen = True
+                    if self.mouse_pos[0] < 420 and self.mouse_pos[0] > 350 and pg.mouse.get_pressed()[0]:
+                        print("2 plz")
+                        self.game.level = 'lvl3.txt'
+                        self.game.next_stage('lvl3.txt')
+                        self.game.level_chosen = True
+                    if self.mouse_pos[0] < 550 and self.mouse_pos[0] > 480 and pg.mouse.get_pressed()[0]:
+                        print("3 plz")
+                        self.game.level = 'lvl4.txt'
+                        self.game.next_stage('lvl4.txt')
+                        self.game.level_chosen = True
+
     # The projectile sprite is created and shot at speeds. The directions are determined by mouse_pos and to shoot is derived from mouse_get_pressed in get_keys.
     def shoot(self):
         self.cd.event_time = floor(pg.time.get_ticks() / 1000)

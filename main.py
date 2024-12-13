@@ -11,6 +11,9 @@ from utilities import *
 from typing import *
 '''
 Sources:
+
+Arth Murarka, Kyle Suhendraw, and Shahmeer Khan for suggestion of the Main Menu
+
 Stat/Health bar from Chris Cozort
 Original Classes(Player,Game, and Functioning Movement) from Chris Cozort
 
@@ -72,21 +75,23 @@ def draw_stat_bar(surf, x, y, w, h, pct, fill_color, outline_color):
 class Game:
   def __init__(self):
     pg.init()
+    self.level_chosen = False
     self.bonus_achieved = False
+    self.levels_button_clicked = False
     self.collisions_with_portal = 0
     self.clock = pg.time.Clock()
     self.screen = pg.display.set_mode((WIDTH, HEIGHT))
     pg.display.set_caption("Umar's Coolest Game Ever...")
     self.playing = True
     self.coins_per_level = 18
-    self.next_level = 'loading.txt'
-    self.level = 'lvl1.txt'
+    self.next_level = 'lvl1.txt'
+    self.level = 'startmenu.txt'
     self.total_coins = 0
     self.score = 0
   # the load_data is used to get data files(png and txt) for level info or sprite images
   def load_data(self):
     self.game_folder = path.dirname(__file__)
-    self.map = Map(path.join(self.game_folder, 'lvl1.txt'))
+    self.map = Map(path.join(self.game_folder, 'startmenu.txt'))
     self.img_folder = path.join(self.game_folder, 'img')
     self.player_img = pg.image.load(path.join(self.img_folder, 'peach1.png'))
     self.speed_img = pg.image.load(path.join(self.img_folder, 'image.png'))
@@ -140,6 +145,11 @@ class Game:
     self.all_coins = pg.sprite.Group()
     self.all_projectiles= pg.sprite.Group()
     self.all_portals= pg.sprite.Group()
+    self.level = 'startmenu.txt'
+    self.level_chosen = False
+    self.bonus_achieved = False
+    self.levels_button_clicked = False
+    self.collisions_with_portal = 0
     # enumerates the .txt files, so it can be read as columns and rows
     # It scans the columns and rows for specfic letters such as M to place a Mob. Each letter is a different Tile of 32 pixels.
     #for loop to add more walls/sprites from the group all_sprites
@@ -224,22 +234,23 @@ class Game:
   '''
   #Change the value for the if statement to a variable amount that changes for each level
   def next_level_first(self,level):
-    if self.level == 'lvl1.txt':
-      self.coins_per_level = 5
-      self.next_level = 'lvl3.txt'
-    if self.level == 'lvl3.txt':
-      self.coins_per_level = 3
-      self.next_level = 'lvl3.txt'
-    if self.level == 'lvl4.txt':
-      self.coins_per_level = 2
-      self.next_level = 'loading.txt'
-    if self.bonus_achieved == True:
-      self.coins_per_level = 6
-      self.next_level = self.level
-    if self.player.coins == self.coins_per_level and self.bonus_achieved == False:
-      #next stage
-      self.next_stage(self.next_level)
-      self.level = self.next_level
+    if self.level != 'startmenu.txt' or self.level_chosen == True:
+      if self.level == 'lvl1.txt':
+        self.coins_per_level = 5
+        self.next_level = 'lvl3.txt'
+      if self.level == 'lvl3.txt':
+        self.coins_per_level = 3
+        self.next_level = 'lvl4.txt'
+      if self.level == 'lvl4.txt':
+        self.coins_per_level = 2
+        self.next_level = 'loading.txt'
+      if self.bonus_achieved == True:
+        self.coins_per_level = 6
+        self.next_level = self.level
+      if self.player.coins == self.coins_per_level and self.bonus_achieved == False:
+        #next stage
+        self.next_stage(self.next_level)
+        self.level = self.next_level
       
       #when player is recalled it resets the coins, so we put it back
       #change other stuff     
@@ -289,13 +300,20 @@ class Game:
   def draw(self):
     self.screen.fill((0, 0, 0))
     self.all_sprites.draw(self.screen)
+    if self.level == 'startmenu.txt':
+      self.draw_text(self.screen, "Main Menu", 64, White, WIDTH // 2, HEIGHT - 18* TILESIZE)
+      self.draw_text(self.screen, "Levels", 50, White, WIDTH // 2, HEIGHT - 14* TILESIZE)
+    if self.levels_button_clicked == True and self.level == 'startmenu.txt':
+      self.draw_text(self.screen, "Level 1", 24, White, WIDTH - 24*TILESIZE, HEIGHT - 10* TILESIZE)
+      self.draw_text(self.screen, "Level 2", 24, White, WIDTH - 20*TILESIZE, HEIGHT - 10* TILESIZE)
+      self.draw_text(self.screen, "Level 3", 24, White, WIDTH - 16*TILESIZE, HEIGHT - 10* TILESIZE)
     # Any text
     # self.draw_text(self.screen, "asdfdafddjfjdfjjdsfasdf", 24, White, WIDTH / 2, HEIGHT / 2)
     # Displays FPS and Coins
     self.draw_text(self.screen, str(self.dt*1000), 18, White, WIDTH/30, HEIGHT/30)
     # Draw health bar
     # So, that if the end screen or home screen is there than it won't generate or leave the healthbar or the coins amount
-    if self.level != 'loading.txt':
+    if self.level != 'loading.txt' and self.level != 'startmenu.txt':
       draw_stat_bar(self.screen, self.player.rect.x, self.player.rect.y-TILESIZE, TILESIZE, 25, 20*self.player.health, Green, White)
       self.draw_text(self.screen, ("Coins: "+str(self.player.coins)), 18, Yellow, self.player.rect.x - TILESIZE, self.player.rect.y - TILESIZE)
     '''
@@ -303,7 +321,7 @@ class Game:
     I also put total_coins into Game as the player resets every level also resetting the coins.
     '''
     if self.level == 'loading.txt':
-          self.next_stage('loading.txt')
+          # self.next_stage('loading.txt')
           self.draw_text(self.screen, "Game Complete!!!", 45, White, WIDTH // 2, HEIGHT // 2)
           self.draw_text(self.screen, "Coins: "+str(self.total_coins+self.score), 36, Yellow, WIDTH // 2, HEIGHT // 1.75)
     # draw_stat_bar(self.screen, self.mob.rect.x, self.mob.rect.y-TILESIZE, TILESIZE, 25, self.mob.health, Red, White)
