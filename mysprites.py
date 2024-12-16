@@ -217,6 +217,7 @@ class Player(Sprite):
         self.collide_with_stuff(self.game.all_mobs, False)
         self.collide_with_stuff(self.game.all_portals, False)
         self.collide_with_stuff(self.game.all_projectiles, False)
+        self.collide_with_stuff(self.game.all_bullets, False)
         # self.collide_with_boss_bullet(self.game.all_projectiles)
 # added Mob - moving objects
 #is a child class of Sprite
@@ -319,7 +320,7 @@ class Projectile(Sprite):
 
 class Boss_Bullet(Sprite):
     def __init__(self, game, x, y):
-        self.groups = game.all_sprites , game.all_projectiles
+        self.groups = game.all_sprites , game.all_bullets
         Sprite.__init__(self, self.groups)
         self.game = game
         self.image = self.game.boss_bullet_img
@@ -468,11 +469,11 @@ class Boss(Sprite):
         self.x = x * 5*TILESIZE
         self.y = y * TILESIZE
         self.boss_xpos = self.rect.x
-        self.speed = 15
+        self.speed = 30
         self.cooldown=Cooldown()
-        self.rapid_cooldown=Cooldown()
+        # self.rapid_cooldown=Cooldown()
         self.end_game = False
-        self.bullet_speed = 20
+        # self.bullet_speed = 20
         # self.drop_speed=30
         #create if statement to make the Platforms bounce back when they hit the wall
     # this method updates the Mob sprite so that it is always checking whether it is touching the side of the
@@ -481,12 +482,10 @@ class Boss(Sprite):
         # self.player.cd.event_time = floor(pg.time.get_ticks() / 1000)
         # if self.player.cd.delta > 0.01:
         move = random.randint(-50,50)
-        # self.Boss_Bullet.rect.y += self.Boss_Buller.speed
-        if self.end_game == False:
-            b=Boss_Bullet(self.game, self.rect.x+move, self.rect.y)
-        if self.end_game == True and self.health <= 3:
+        b=Boss_Bullet(self.game, self.rect.x+move, self.rect.y)
+        if self.end_game == True:
             angle=random.randint(-500,500)
-            b=Boss_Bullet(self.game, self.rect.x+angle, self.rect.y)
+            b=Boss_Bullet(self.game, self.rect.x*angle, self.rect.y*angle)
     def collide_with_thing(self,group,kill, health):
             hits=pg.sprite.spritecollide(self,group,kill)
             if hits:
@@ -499,21 +498,22 @@ class Boss(Sprite):
     def update(self):
         self.collide_with_thing(self.game.all_projectiles, self.health, True)
         self.cooldown.ticking()
-        self.rapid_cooldown.ticking()
+        # self.rapid_cooldown.ticking()
         self.rect.x += self.speed
+        self.rn_time=self.cooldown.ticking()
         # self.rect.y += self.speed
         #if the x value is greater or less than either side of the screen
         if self.rect.x > WIDTH - TILESIZE or self.rect.x < 0:
             self.speed *= -1
         if self.health > 3:
-            r=random.randint(0,40)
-            if self.rect.x == r*15:
+            r= random.randint(0,30)
+            if self.rect.x == r*30:
                 self.speed = 0
                 if self.speed == 0:
                     self.cooldown.event_time = floor(pg.time.get_ticks()/1000)
                     self.boss_shoot()
-                    if self.cooldown.delta > 3:
-                        self.speed = 15
+                    if self.cooldown.delta >= 2:
+                        self.speed = 30
         if self.health <= 3:
             print("lock in")
             self.end_game = True

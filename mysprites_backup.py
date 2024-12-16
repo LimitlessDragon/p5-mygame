@@ -207,6 +207,7 @@ class Player(Sprite):
         self.collide_with_stuff(self.game.all_coins, True)
         self.collide_with_stuff(self.game.all_mobs, False)
         self.collide_with_stuff(self.game.all_portals, False)
+        self.collide_with_stuff(self.game.all_bullets, False)
 # added Mob - moving objects
 #is a child class of Sprite
 # The Mob is in the group of all_mobs in which above the interactions between Mobs and Players can be created
@@ -305,7 +306,24 @@ class Projectile(Sprite):
         self.rect.y -= self.speed
         if self.rect.y < 0:
             self.kill()
-        
+
+class Boss_Bullet(Sprite):
+    def __init__(self, game, x, y):
+        self.groups = game.all_sprites , game.all_projectiles
+        Sprite.__init__(self, self.groups)
+        self.game = game
+        self.image = self.game.boss_bullet_img
+        self.image.set_colorkey(Black)
+        self.rect = self.image.get_rect()
+        self.rect.x = x
+        self.rect.y = y
+        self.x = x * TILESIZE
+        self.y = y * TILESIZE
+        self.speed = 20
+    def update(self):
+        self.rect.y += self.speed
+        if self.rect.y > HEIGHT:
+            self.kill()
 # This is the Speed Class that is part of the class all_powerups which has a shared interaction between it and the Player
 class Speed(Sprite):
     def __init__(self, game, x, y):
@@ -444,7 +462,7 @@ class Boss(Sprite):
         # self.drop_speed=30
         #create if statement to make the Platforms bounce back when they hit the wall
     # this method updates the Mob sprite so that it is always checking whether it is touching the side of the
-    # screen, so it can go backwards using an if statement.
+    # screen, so it can go backward using an if statement.
     def boss_shoot(self):
         # self.player.cd.event_time = floor(pg.time.get_ticks() / 1000)
         # if self.player.cd.delta > 0.01:
@@ -462,8 +480,8 @@ class Boss(Sprite):
         #if the x value is greater or less than either side of the screen
         if self.rect.x > WIDTH - TILESIZE or self.rect.x < 0:
             self.speed *= -1
-        if self.health >= 3:
-            r=random.randint(0,25)
+        if self.health > 3:
+            r= random.randint(0,30)
             if self.rect.x == r*30:
                 self.speed = 0
                 if self.speed == 0:

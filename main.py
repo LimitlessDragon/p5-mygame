@@ -152,6 +152,7 @@ class Game:
     self.all_powerups = pg.sprite.Group()
     self.all_coins = pg.sprite.Group()
     self.all_projectiles= pg.sprite.Group()
+    self.all_bullets= pg.sprite.Group()
     self.all_portals= pg.sprite.Group()
     self.level = 'startmenu.txt'
     self.level_chosen = False
