@@ -19,6 +19,8 @@ Original Classes(Player,Game, and Functioning Movement) from Chris Cozort
 
 https://www.pygame.org/docs/ref/mouse.html - used to see if mouse is clicked
 
+Pieces of Missile image
+https://www.vecteezy.com/png/36940512-ai-generated-missile-png-supersonic-missile-png-war-head-png-warhead-png-nuclear-missile-png-military-weapon-png-explosive-shell-png-missile-transparent-background
 
 Trampoline Image
 https://www.pixilart.com/art/trampoline-sprite-for-gam-c1144d241cff7e5
@@ -89,6 +91,7 @@ class Game:
     self.level = 'startmenu.txt'
     self.total_coins = 0
     self.score = 0
+    self.boss_beaten = False
   # the load_data is used to get data files(png and txt) for level info or sprite images
   def load_data(self):
     self.game_folder = path.dirname(__file__)
@@ -106,6 +109,7 @@ class Game:
     self.moving_wall_img = pg.image.load(path.join(self.img_folder, 'moving (2).png'))
     self.trampoline_img = pg.image.load(path.join(self.img_folder, 'trampoline2.png'))
     self.boss_img = pg.image.load(path.join(self.img_folder, 'Boss.png'))
+    self.boss_bullet_img = pg.image.load(path.join(self.img_folder, 'boss_bullet.png'))
     '''
     self.mob_3_img = pg.image.load(path.join(self.img_folder, 'mob_full_health.png'))
     Player.get_keys(self)
@@ -134,6 +138,7 @@ class Game:
     self.load_data()
     self.chosen_level = 'startmenu.txt'
     coins_per_level=0
+    self.boss_beaten = False
     #create game countdown
     self.game_timer= Timer(self)
     #countdown time
@@ -186,7 +191,7 @@ class Game:
           if tile == 'p':
             Portal(self,col*TILESIZE, row*TILESIZE)
           if tile == 'B':
-            Boss(self,col*TILESIZE, row*TILESIZE)
+            self.Boss=Boss(self,col*TILESIZE, row*TILESIZE)
     #drawing_sprites(self)
 
   '''
@@ -247,7 +252,8 @@ class Game:
         self.coins_per_level = 3
         self.next_level = 'lvl4.txt'
       if self.level == 'lvl4.txt':
-        self.coins_per_level = 3
+        if self.boss_beaten == True:
+          self.player.coins == self.coins_per_level
         self.next_level = 'loading.txt'
       if self.bonus_achieved == True:
         self.coins_per_level = 6
@@ -303,7 +309,7 @@ class Game:
           if tile == 'p':
             Portal(self,col*TILESIZE, row*TILESIZE)
           if tile == 'B':
-            Boss(self,col*TILESIZE, row*TILESIZE)
+            self.Boss=Boss(self,col*TILESIZE, row*TILESIZE)
 
   # output
   def draw(self):
@@ -333,6 +339,7 @@ class Game:
     # So, that if the end screen or home screen is there than it won't generate or leave the healthbar or the coins amount
     if self.level != 'loading.txt' and self.level != 'startmenu.txt':
       draw_stat_bar(self.screen, self.player.rect.x, self.player.rect.y-TILESIZE, TILESIZE, 25, 20*self.player.health, Green, White)
+      draw_stat_bar(self.screen, self.Boss.rect.x - TILESIZE, self.Boss.rect.y-TILESIZE, TILESIZE, 25, 20*self.Boss.health, Green, White)
       self.draw_text(self.screen, ("Coins: "+str(self.player.coins)), 18, Yellow, self.player.rect.x - TILESIZE, self.player.rect.y - TILESIZE)
     '''
     This is where the end screen comes in. If the level is loading text than reload the level and display the end stuff: coins and game complete.
