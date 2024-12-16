@@ -92,6 +92,7 @@ class Game:
     self.total_coins = 0
     self.score = 0
     self.boss_beaten = False
+    self.end_game = False
   # the load_data is used to get data files(png and txt) for level info or sprite images
   def load_data(self):
     self.game_folder = path.dirname(__file__)
@@ -110,6 +111,7 @@ class Game:
     self.trampoline_img = pg.image.load(path.join(self.img_folder, 'trampoline2.png'))
     self.boss_img = pg.image.load(path.join(self.img_folder, 'Boss.png'))
     self.boss_bullet_img = pg.image.load(path.join(self.img_folder, 'boss_bullet.png'))
+    self.nuke_img = pg.image.load(path.join(self.img_folder, 'nuke.png'))
     '''
     self.mob_3_img = pg.image.load(path.join(self.img_folder, 'mob_full_health.png'))
     Player.get_keys(self)
@@ -135,6 +137,7 @@ class Game:
 
   # This occurs when you first start up the game: Basically it resets everything to starting stats and initializes the groups and sprites in their positions
   def new(self):
+    self.end_game = False
     self.load_data()
     self.chosen_level = 'startmenu.txt'
     coins_per_level=0
@@ -228,6 +231,7 @@ class Game:
   def update(self):
     self.next_level_first(self)
     self.game_timer.ticking()
+    self.tracking = self.player.rect.x
     # update all the sprites...and I MEAN ALL OF THEM
     self.all_sprites.update()
   def draw_text(self, surface, text, size, color, x, y):
@@ -253,8 +257,7 @@ class Game:
         self.coins_per_level = 3
         self.next_level = 'lvl4.txt'
       if self.level == 'lvl4.txt':
-        if self.boss_beaten == True:
-          self.player.coins == self.coins_per_level
+        self.coins_per_level = 3
         self.next_level = 'loading.txt'
       if self.bonus_achieved == True:
         self.coins_per_level = 6
@@ -262,12 +265,16 @@ class Game:
       if self.level == 'loading.txt':
         self.coins_per_level == 994299242
       if self.player.coins == self.coins_per_level and self.bonus_achieved == False:
-        #next stage
         if self.player.coins == self.coins_per_level and self.level != 'loading.txt':
           self.score += 500
+          print("prepare")
         self.next_stage(self.next_level)
+        print("next")
         self.level = self.next_level
-      
+      if self.boss_beaten == True and self.level == 'lvl4.txt':
+        self.score+=1000
+        self.level = 'loading.txt'
+        self.next_stage('loading.txt')
       #when player is recalled it resets the coins, so we put it back
       #change other stuff     
   '''

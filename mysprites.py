@@ -331,10 +331,16 @@ class Boss_Bullet(Sprite):
         self.x = x * TILESIZE
         self.y = y * TILESIZE
         self.speed = 20
+        # self.image = self.game.boss_Bullet_img
     def update(self):
-        self.rect.y += self.speed
+        if self.game.end_game == False:
+            self.rect.y += self.speed
+        if self.game.end_game == True:
+            self.image = self.game.nuke_img
+            self.rect.x -= self.speed
         if self.rect.y > HEIGHT:
             self.kill()
+        
         # self.rect.x = self.Boss.boss_xpos.x + move
         
 # This is the Speed Class that is part of the class all_powerups which has a shared interaction between it and the Player
@@ -471,8 +477,9 @@ class Boss(Sprite):
         self.boss_xpos = self.rect.x
         self.speed = 30
         self.cooldown=Cooldown()
-        # self.rapid_cooldown=Cooldown()
-        self.end_game = False
+        self.rapid_cooldown=Cooldown()
+        self.game.end_game = False
+        self.rando=0
         # self.bullet_speed = 20
         # self.drop_speed=30
         #create if statement to make the Platforms bounce back when they hit the wall
@@ -481,24 +488,22 @@ class Boss(Sprite):
     def boss_shoot(self):
         # self.player.cd.event_time = floor(pg.time.get_ticks() / 1000)
         # if self.player.cd.delta > 0.01:
-        move = random.randint(-50,50)
-        b=Boss_Bullet(self.game, self.rect.x+move, self.rect.y)
-        if self.end_game == True:
-            angle=random.randint(-500,500)
-            b=Boss_Bullet(self.game, self.rect.x*angle, self.rect.y*angle)
+            if self.game.end_game == False:
+                self.move = random.randint(-50,50)
+                b=Boss_Bullet(self.game, self.rect.x, self.rect.y)
+            if self.game.end_game == True:
+                t=Boss_Bullet(self.game, 1050, self.rando)
     def collide_with_thing(self,group,kill, health):
             hits=pg.sprite.spritecollide(self,group,kill)
             if hits:
                 if str(hits[0].__class__.__name__) == "Projectile":
                     self.health -= 1
                     print("oof")
-                if self.health == 0:
-                    print("wasted")
-                    self.kill()
     def update(self):
+        self.rando = random.randint(550,650)
         self.collide_with_thing(self.game.all_projectiles, self.health, True)
         self.cooldown.ticking()
-        # self.rapid_cooldown.ticking()
+        self.rapid_cooldown.ticking()
         self.rect.x += self.speed
         self.rn_time=self.cooldown.ticking()
         # self.rect.y += self.speed
@@ -514,13 +519,16 @@ class Boss(Sprite):
                     self.boss_shoot()
                     if self.cooldown.delta >= 2:
                         self.speed = 30
-        if self.health <= 3:
+        if self.health <= 3 and self.health > 0:
             print("lock in")
-            self.end_game = True
+            self.game.end_game = True
             self.rect.x = WIDTH // 2
-            self.rect.y = HEIGHT // 2
+            self.rect.y = HEIGHT//3
             self.rapid_cooldown.event_time = floor(pg.time.get_ticks()/1000)
-            if self.rapid_cooldown.delta >= 0.01:
+            if self.rapid_cooldown.delta > 0.4:
                 self.boss_shoot()
-        if self.health == 0:
-            self.game.boss_beaten = True
+            if self.health < 1:
+                print("mission success")
+                self.game.boss_beaten = True
+                if self.game.boss_beaten == True:
+                        self.kill()

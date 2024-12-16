@@ -458,6 +458,7 @@ class Boss(Sprite):
         self.boss_xpos = self.rect.x
         self.speed = 30
         self.cooldown=Cooldown()
+        self.rapid_cooldown=Cooldown()
         self.end_game = False
         # self.drop_speed=30
         #create if statement to make the Platforms bounce back when they hit the wall
@@ -474,6 +475,7 @@ class Boss(Sprite):
     def update(self):
         self.cooldown.ticking()
         self.rn_time=self.cooldown.ticking()
+        # self.rapid_cooldown.ticking()
         print(self.cooldown.delta)
         self.rect.x += self.speed
         # self.rect.y += self.speed
