@@ -120,8 +120,8 @@ class Player(Sprite):
                 self.vel.y = 0
                 self.rect.y = self.pos.y
                 self.jumping = False
-    # collide_with_stuff creates interactions between the all_powerups groups and can change the speed, jump_power, 
-    # it also needs a timer
+    # collide_with_stuff creates interactions between the all_powerups groups and can change the speed, jump_power,
+    # This is also used for collision with other moving entities like Mobs and Bosses in which affects their health and the Player's health
     def collide_with_stuff(self,group,kill):
         hits=pg.sprite.spritecollide(self,group,kill)
         if hits:
@@ -178,21 +178,8 @@ class Player(Sprite):
                     print("collided with mob")
                 else:
                     print("ouch I was hurt!!!")
-            # if str(hits[0].__class__.__name__) == "Boss_Bullet":
-            #     self.invulnerable.event_time = floor(pg.time.get_ticks()/1000)
-            #     # hits[0].image = self.game.mob_img
-            #     if self.invulnerable.delta > .01:
-            #         self.health -= 1
-            #     if self.vel.y > 0:
-            #         print("collided with mob")
-            #     else:
-            #         print("ouch I was hurt!!!")
-    # def collide_with_boss_bullet(self, group, kill):
-    #     hits=pg.sprite.spritecollide(self,group, kill)
-    #     if hits:
-    #         if str(hits[0].__class__.__name__) == "Boss_Bullet":
-    #             self.health -= 1
-    #             print("oof")
+
+# The game always runs this code. Inside it goes if statements to determine changing parts of the game like collisions, score, and other stats/values.
     def update(self):
         self.cd.ticking()
         self.invulnerable.ticking()
@@ -245,6 +232,8 @@ class Mob(Sprite):
         #create if statement to make the Mobs bounce back when they hit the wall
     # this method updates the Mob sprite so that it is always checking whether it is touching the side of the
     # screen, so it can go backwards using an if statement.
+
+    # This determines the Mob's interaction with the Projectile shot by the Player.
     def collide_with_projectile(self,group,kill, health):
             hits=pg.sprite.spritecollide(self,group,kill)
             if hits:
@@ -254,16 +243,6 @@ class Mob(Sprite):
                 if self.health == 0:
                     print("wasted")
                     self.kill()
-    # def shoot(self):
-    #     self.cd.event_time = floor(pg.time.get_ticks() / 1000)
-    #     if self.cd.delta > 0.1:
-    #         print(pg.mouse.get_pos())
-    #         print(self.pos)
-    #         self.mouse_pos = pg.mouse.get_pos()
-    #         p=Projectile(self.game, self.rect.x, self.rect.y)
-    #         self.mouse_pos = pg.mouse.get_pos()
-    #         if self.mouse_pos[0] < self.pos.x:
-    #             p.speed *= -1
     def update(self):
         self.image = self.game.mob_img
         self.image.set_colorkey(Black)
@@ -285,6 +264,8 @@ class Mob(Sprite):
             self.rect.y = 0            
         self.collide_with_projectile(self.game.all_projectiles, self.health, True)
 # The Wall Class is part of the group all_walls in which interacts with the Player
+
+# The Player stands on these solid Tilesizes which are Walls. They make up the blocks of the game.
 class Wall(Sprite):
     def __init__(self, game, x, y):
         self.groups = game.all_sprites , game.all_walls
@@ -300,6 +281,7 @@ class Wall(Sprite):
         self.y = y * TILESIZE
     def update(self):
         pass
+# This is the bullet the Player shoots to damage mobs and bosses
 class Projectile(Sprite):
     def __init__(self, game, x, y):
         self.groups = game.all_sprites , game.all_projectiles
@@ -317,7 +299,7 @@ class Projectile(Sprite):
         self.rect.y -= self.speed
         if self.rect.y < 0:
             self.kill()
-
+# This is the Level 3 Boss's rockets in which he kills/damages the Player with. It is a spin-off of the Projectile from the Player.
 class Boss_Bullet(Sprite):
     def __init__(self, game, x, y):
         self.groups = game.all_sprites , game.all_bullets
@@ -359,6 +341,7 @@ class Speed(Sprite):
     def update(self):
         pass
 
+# This powerup allows the player to collide with it in collide_with stuff to enter the bonus levels(in main.py).
 class Portal(Sprite):
     def __init__(self, game, x, y):
         self.groups = game.all_sprites , game.all_portals
@@ -389,6 +372,7 @@ class Jump(Sprite):
         self.y = y
     def update(self):
         pass
+# if this sprite collides with the player it gives it additional health providing an alternative goal in the game besides coins and new levels.
 class Heart(Sprite):
     def __init__(self, game, x, y):
         self.groups = game.all_sprites , game.all_powerups
@@ -403,7 +387,7 @@ class Heart(Sprite):
         self.y = y
     def update(self):
         pass
-# this is the Coin Class
+# this is the Coin Class. Players must collect this to gain score and points and to pass to the next level.
 class Coin(Sprite):
     def __init__(self, game, x, y):
         self.groups = game.all_sprites , game.all_coins
@@ -418,6 +402,7 @@ class Coin(Sprite):
         self.y = y
     def update(self):
         pass
+# This is a spin-off of the Wall with a speed element from Mob. It is created to increase mobility and challenge in the game as it provides a different type of wall.
 class Moving_wall(Sprite):
     def __init__(self, game, x, y):
         self.groups = game.all_sprites , game.all_walls
@@ -458,6 +443,12 @@ class Trampoline(Sprite):
         self.y = y * TILESIZE
     def update(self):
         pass
+'''
+This is level 3's boss. It is a spin-off of the Mob class in which it moves like it and has the same image/skin, but bigger. It shoots bullets which are like 
+projectiles that the Player shoots, but they damage the Player's health. The boss has a second faze after it reachers 3 out of 5 hp where it spams horizontal missiles instead of its randomized vertical ones.
+I used random.randint to check in update if the Mob reaches a random x point in which it will stop and fire missiles for 3 seconds before resuming it's horizontal movement.
+The utilities timer was used.
+'''
 class Boss(Sprite):
     def __init__(self, game, x, y):
         self.groups = game.all_sprites , game.all_mobs

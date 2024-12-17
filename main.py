@@ -62,6 +62,10 @@ Timer for Powerup
 create a reset button(r)-fix the load_data error when I tried to do it
 create a def current_level(): to save the level after you die
 '''
+
+
+
+# This draws a bar based on any stat. It is used for health bars and text borders
 def draw_stat_bar(surf, x, y, w, h, pct, fill_color, outline_color):
     if pct < 0:
         pct = 0
@@ -243,9 +247,7 @@ class Game:
     surface.blit(text_surface, text_rect)
   '''
   When the total # of Coins are reached then the level is switched to the next level
-  The next thing to do with this is to change other values like speed and health(maybe)
-  Also, later I can make this more streamline with more levels like lvl_4.txt and lvl_5.txt in which I could scan the current level
-  for amount of coins to check if all were collected before switching.
+  Each number of coins per level is different
   '''
   #Change the value for the if statement to a variable amount that changes for each level
   def next_level_first(self,level):
@@ -323,31 +325,35 @@ class Game:
   def draw(self):
     self.screen.fill((0, 0, 0))
     self.all_sprites.draw(self.screen)
+    '''
+    If the level is the menu then display all the texts and borders using draw_stat_bar and self.draw_text to create the menu's gui.
+    It's code is in the get_kes in my_sprites.
+    '''
     if self.level == 'startmenu.txt':
       self.draw_text(self.screen, "Coin Collector", 64, Yellow, WIDTH // 2, HEIGHT - 18* TILESIZE)
       draw_stat_bar(self.screen, WIDTH - 18.5 * TILESIZE, HEIGHT - 14 * TILESIZE, 5*TILESIZE, 2*TILESIZE, 100, Yellow, Black)
       self.draw_text(self.screen, "Levels", 50, Black, WIDTH // 2, HEIGHT - 14* TILESIZE)
       # self.draw_text(self.screen, "Settings", 50, White, WIDTH // 2, HEIGHT - 14* TILESIZE)
     if self.levels_button_clicked == True and self.level == 'startmenu.txt':
-      # draw_stat_bar(self.screen, WIDTH - 26 *TILESIZE, HEIGHT - 10 * TILESIZE, 15*TILESIZE, 2*TILESIZE, 100, Yellow, Black)
-      # self.draw_text(self.screen, "Level 1", 24, Black, WIDTH - 24*TILESIZE, HEIGHT - 10* TILESIZE)
-      # self.draw_text(self.screen, "Level 2", 24, Black, WIDTH - 20*TILESIZE, HEIGHT - 10* TILESIZE)
-      # self.draw_text(self.screen, "Level 3", 24, Black, WIDTH - 16*TILESIZE, HEIGHT - 10* TILESIZE)
+      '''
+      draw_stat_bar(self.screen, WIDTH - 26 *TILESIZE, HEIGHT - 10 * TILESIZE, 15*TILESIZE, 2*TILESIZE, 100, Yellow, Black)
+      self.draw_text(self.screen, "Level 1", 24, Black, WIDTH - 24*TILESIZE, HEIGHT - 10* TILESIZE)
+      self.draw_text(self.screen, "Level 2", 24, Black, WIDTH - 20*TILESIZE, HEIGHT - 10* TILESIZE)
+      self.draw_text(self.screen, "Level 3", 24, Black, WIDTH - 16*TILESIZE, HEIGHT - 10* TILESIZE)
+      '''
       draw_stat_bar(self.screen, WIDTH - 17.5*TILESIZE, HEIGHT - 8 * TILESIZE, 3*TILESIZE, 1*TILESIZE, 100, Yellow, Black)
       draw_stat_bar(self.screen, WIDTH - 17.5*TILESIZE, HEIGHT - 10 * TILESIZE, 3*TILESIZE, 1*TILESIZE, 100, Yellow, Black)
       draw_stat_bar(self.screen, WIDTH - 17.5*TILESIZE, HEIGHT - 12 * TILESIZE, 3*TILESIZE, 1*TILESIZE, 100, Yellow, Black)
       self.draw_text(self.screen, "Level 1", 24, Black, WIDTH //2, HEIGHT - 12* TILESIZE)
       self.draw_text(self.screen, "Level 2", 24, Black, WIDTH //2, HEIGHT - 10* TILESIZE)
       self.draw_text(self.screen, "Level 3", 24, Black, WIDTH //2, HEIGHT - 8* TILESIZE)
-    # Any text
-    # self.draw_text(self.screen, "asdfdafddjfjdfjjdsfasdf", 24, White, WIDTH / 2, HEIGHT / 2)
-    # Displays FPS and Coins
     self.draw_text(self.screen, str(self.dt*1000), 18, White, WIDTH/30, HEIGHT/30)
-    # Draw health bar
+
     # So, that if the end screen or home screen is there than it won't generate or leave the healthbar or the coins amount
     if self.level != 'loading.txt' and self.level != 'startmenu.txt':
       draw_stat_bar(self.screen, self.player.rect.x, self.player.rect.y-TILESIZE, TILESIZE, 25, 20*self.player.health, Green, White)
       self.draw_text(self.screen, ("Coins: "+str(self.player.coins)), 18, Yellow, self.player.rect.x - TILESIZE, self.player.rect.y - TILESIZE)
+    # If the player is on the boss level, then create the health bar for him
     if self.level == 'lvl4.txt':
       draw_stat_bar(self.screen, self.Boss.rect.x - TILESIZE, self.Boss.rect.y-TILESIZE, TILESIZE, 25, 20*self.Boss.health, Green, White) 
     '''
