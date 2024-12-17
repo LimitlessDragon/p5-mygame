@@ -259,7 +259,8 @@ class Game:
         self.coins_per_level = 3
         self.next_level = 'lvl4.txt'
       if self.level == 'lvl4.txt':
-        self.coins_per_level = 1
+        if self.boss_beaten == True:
+          self.coins_per_level = 1
         self.next_level = 'loading.txt'
       if self.bonus_achieved == True:
         self.coins_per_level = 6
@@ -269,9 +270,7 @@ class Game:
       if self.player.coins == self.coins_per_level and self.bonus_achieved == False:
         if self.player.coins == self.coins_per_level and self.level != 'loading.txt':
           self.score += 500
-          print("prepare")
         self.next_stage(self.next_level)
-        print("next")
         self.level = self.next_level
       # if self.boss_beaten == True and self.level == 'lvl4.txt':
       #   self.score+=1000
