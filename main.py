@@ -257,7 +257,7 @@ class Game:
         self.coins_per_level = 3
         self.next_level = 'lvl4.txt'
       if self.level == 'lvl4.txt':
-        self.coins_per_level = 3
+        self.coins_per_level = 1
         self.next_level = 'loading.txt'
       if self.bonus_achieved == True:
         self.coins_per_level = 6
@@ -271,10 +271,10 @@ class Game:
         self.next_stage(self.next_level)
         print("next")
         self.level = self.next_level
-      if self.boss_beaten == True and self.level == 'lvl4.txt':
-        self.score+=1000
-        self.level = 'loading.txt'
-        self.next_stage('loading.txt')
+      # if self.boss_beaten == True and self.level == 'lvl4.txt':
+      #   self.score+=1000
+      #   self.level = 'loading.txt'
+      #   self.next_stage('loading.txt')
       #when player is recalled it resets the coins, so we put it back
       #change other stuff     
   '''
@@ -347,8 +347,9 @@ class Game:
     # So, that if the end screen or home screen is there than it won't generate or leave the healthbar or the coins amount
     if self.level != 'loading.txt' and self.level != 'startmenu.txt':
       draw_stat_bar(self.screen, self.player.rect.x, self.player.rect.y-TILESIZE, TILESIZE, 25, 20*self.player.health, Green, White)
-      draw_stat_bar(self.screen, self.Boss.rect.x - TILESIZE, self.Boss.rect.y-TILESIZE, TILESIZE, 25, 20*self.Boss.health, Green, White)
       self.draw_text(self.screen, ("Coins: "+str(self.player.coins)), 18, Yellow, self.player.rect.x - TILESIZE, self.player.rect.y - TILESIZE)
+    if self.level == 'lvl4.txt':
+      draw_stat_bar(self.screen, self.Boss.rect.x - TILESIZE, self.Boss.rect.y-TILESIZE, TILESIZE, 25, 20*self.Boss.health, Green, White) 
     '''
     This is where the end screen comes in. If the level is loading text than reload the level and display the end stuff: coins and game complete.
     I also put total_coins into Game as the player resets every level also resetting the coins.
