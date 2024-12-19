@@ -200,8 +200,6 @@ class Game:
             Portal(self,col*TILESIZE, row*TILESIZE)
           if tile == 'B':
             self.Boss=Boss(self,col*TILESIZE, row*TILESIZE)
-    #drawing_sprites(self)
-
   '''
   Funny wall generator
     #for i in range(6):
@@ -249,7 +247,6 @@ class Game:
   When the total # of Coins are reached then the level is switched to the next level
   Each number of coins per level is different
   '''
-  #Change the value for the if statement to a variable amount that changes for each level
   def next_level_first(self,level):
     if self.level != 'startmenu.txt' or self.level_chosen == True:
       if self.level == 'lvl1.txt':
